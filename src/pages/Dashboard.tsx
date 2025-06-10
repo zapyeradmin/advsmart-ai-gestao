@@ -1,12 +1,16 @@
+
 import React, { useState } from 'react';
 import StatsCard from '@/components/dashboard/StatsCard';
 import AdminWidgets from '@/components/dashboard/AdminWidgets';
+import TasksWidget from '@/components/dashboard/TasksWidget';
+import DeadlinesWidget from '@/components/dashboard/DeadlinesWidget';
+import RecentActivityWidget from '@/components/dashboard/RecentActivityWidget';
+import QuickActions from '@/components/dashboard/QuickActions';
 import TaskCalendar from '@/components/calendar/TaskCalendar';
 import ClientModal from '@/components/modals/ClientModal';
 import RevenueChart from '@/components/charts/RevenueChart';
 import ProcessChart from '@/components/charts/ProcessChart';
-import { Users, FileText, DollarSign, Calendar, Plus, CheckCircle, RefreshCw, MoreHorizontal } from 'lucide-react';
-import { Button } from "@/components/ui/button";
+import { Users, FileText, DollarSign, Calendar } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
 import PermissionGuard from '@/components/auth/PermissionGuard';
@@ -87,7 +91,7 @@ const Dashboard = () => {
       client: 'Maria Fernandes',
       date: 'Hoje',
       time: '14:30',
-      status: 'critical'
+      status: 'critical' as const
     },
     {
       id: 2,
@@ -96,7 +100,7 @@ const Dashboard = () => {
       client: 'Empresa ABC Ltda.',
       date: 'Amanhã',
       time: '23:59',
-      status: 'warning'
+      status: 'warning' as const
     },
     {
       id: 3,
@@ -105,7 +109,7 @@ const Dashboard = () => {
       client: 'Startup XYZ',
       date: '12/06/2025',
       time: '10:00',
-      status: 'normal'
+      status: 'normal' as const
     }
   ];
 
@@ -117,7 +121,7 @@ const Dashboard = () => {
       client: 'Empresa DEF Ltda.',
       responsible: 'Dr. Ricardo Oliveira',
       time: 'Hoje, 11:23',
-      icon: 'file',
+      icon: 'file' as const,
       color: 'bg-blue-900/30 text-primary'
     },
     {
@@ -127,7 +131,7 @@ const Dashboard = () => {
       client: 'João Carlos Mendes',
       responsible: 'Fatura #INV-2023-056',
       time: 'Hoje, 09:45',
-      icon: 'dollar',
+      icon: 'dollar' as const,
       color: 'bg-green-900/30 text-green-400'
     }
   ];
@@ -193,135 +197,12 @@ const Dashboard = () => {
 
           {/* Tasks and Deadlines */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Tasks */}
-            <div className="bg-dark-card rounded-lg p-5 border border-gray-800 shadow-lg">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-medium text-white">Tarefas Pendentes</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-primary hover:text-blue-400 flex items-center"
-                >
-                  <Plus size={16} className="mr-1" />
-                  Nova Tarefa
-                </Button>
-              </div>
-              
-              <div className="space-y-4">
-                {tasks.map((task) => (
-                  <div key={task.id} className="flex items-center p-3 bg-gray-800 rounded-lg">
-                    <label className="custom-checkbox mr-3 flex-shrink-0">
-                      <input type="checkbox" />
-                      <span className="checkmark"></span>
-                    </label>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-white">{task.title}</p>
-                      <div className="flex items-center mt-1">
-                        <span className="text-xs text-gray-400 mr-3">{task.date}</span>
-                        <span className={`px-2 py-0.5 text-xs rounded-full ${task.priorityColor}`}>
-                          {task.priority}
-                        </span>
-                      </div>
-                    </div>
-                    <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white ml-2">
-                      <MoreHorizontal size={16} />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-4 text-center">
-                <a href="#" className="text-sm text-primary hover:text-blue-400">Ver todas as tarefas</a>
-              </div>
-            </div>
-
-            {/* Upcoming Deadlines */}
-            <div className="bg-dark-card rounded-lg p-5 border border-gray-800 shadow-lg">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-medium text-white">Próximos Prazos</h3>
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="sm" className="text-xs border-gray-600">Esta Semana</Button>
-                  <Button variant="ghost" size="sm" className="text-xs">Próxima Semana</Button>
-                </div>
-              </div>
-              
-              <div className="relative pl-8 before:content-[''] before:absolute before:left-3 before:top-0 before:bottom-0 before:w-0.5 before:bg-gray-700">
-                {upcomingDeadlines.map((deadline, index) => (
-                  <div key={deadline.id} className="mb-6 relative">
-                    <div className={`absolute left-[-29px] top-0 w-6 h-6 rounded-full border-4 border-dark-card z-10 ${
-                      deadline.status === 'critical' ? 'bg-red-500' :
-                      deadline.status === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
-                    }`}></div>
-                    
-                    <div className="bg-gray-800 p-4 rounded-lg">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <span className={`text-xs font-medium px-2 py-1 rounded-full mb-2 inline-block ${
-                            deadline.status === 'critical' ? 'bg-red-900/50 text-red-400' :
-                            deadline.status === 'warning' ? 'bg-yellow-900/50 text-yellow-400' :
-                            'bg-blue-900/50 text-blue-400'
-                          }`}>
-                            {deadline.date}
-                          </span>
-                          <h4 className="text-white font-medium">{deadline.type}</h4>
-                          <p className="text-sm text-gray-400 mt-1">{deadline.process}</p>
-                          <p className="text-sm text-gray-400">Cliente: {deadline.client}</p>
-                        </div>
-                        <span className="text-sm font-medium text-white">{deadline.time}</span>
-                      </div>
-                      
-                      <div className="flex items-center mt-3">
-                        <Button size="sm" className="bg-primary hover:bg-primary-hover text-white mr-2">
-                          <CheckCircle size={12} className="mr-1" />
-                          Confirmar
-                        </Button>
-                        <Button variant="outline" size="sm" className="text-gray-200 border-gray-600">
-                          <FileText size={12} className="mr-1" />
-                          Ver detalhes
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <TasksWidget tasks={tasks} />
+            <DeadlinesWidget deadlines={upcomingDeadlines} />
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-dark-card rounded-lg p-5 border border-gray-800 shadow-lg">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-medium text-white">Atividades Recentes</h3>
-              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
-                <RefreshCw size={16} />
-              </Button>
-            </div>
-            
-            <div className="space-y-4">
-              {recentActivities.map((activity) => (
-                <div key={activity.id} className="flex p-3 bg-gray-800 rounded-lg">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 flex-shrink-0 ${activity.color}`}>
-                    {activity.icon === 'file' ? <FileText size={16} /> : <DollarSign size={16} />}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-white">
-                      {activity.type}: <span className="text-primary">{activity.description}</span>
-                    </p>
-                    <div className="flex items-center justify-between mt-1">
-                      <div className="flex items-center">
-                        <span className="text-xs text-gray-400 mr-2">Cliente: {activity.client}</span>
-                        <span className="text-xs text-gray-400">{activity.responsible}</span>
-                      </div>
-                      <span className="text-xs text-gray-500">{activity.time}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="mt-4 text-center">
-              <a href="#" className="text-sm text-primary hover:text-blue-400">Ver todas as atividades</a>
-            </div>
-          </div>
+          <RecentActivityWidget activities={recentActivities} />
         </>
       )}
 
@@ -330,14 +211,7 @@ const Dashboard = () => {
       {activeTab === 'calendar' && <TaskCalendar />}
 
       {/* Quick Actions */}
-      <div className="fixed bottom-6 right-6 flex flex-col space-y-3">
-        <Button
-          className="w-14 h-14 rounded-full bg-primary hover:bg-primary-hover text-white shadow-lg"
-          onClick={() => setIsClientModalOpen(true)}
-        >
-          <Plus size={24} />
-        </Button>
-      </div>
+      <QuickActions onAddClient={() => setIsClientModalOpen(true)} />
 
       {/* Client Modal */}
       <ClientModal
