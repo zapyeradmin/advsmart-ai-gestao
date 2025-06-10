@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -11,7 +10,8 @@ import {
   UserCheck, 
   BarChart3, 
   Settings,
-  Bot
+  Bot,
+  Calculator
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,6 +25,7 @@ const menuItems = [
   { icon: DollarSign, label: 'Financeiro', path: '/financeiro', permission: 'canViewFinancial' as const },
   { icon: Calendar, label: 'Agenda', path: '/agenda', permission: null },
   { icon: File, label: 'Documentos', path: '/documentos', permission: 'canManageDocuments' as const },
+  { icon: Calculator, label: 'Calculadoras', path: '/calculadoras', permission: null },
   { icon: UserCheck, label: 'Equipe', path: '/equipe', permission: 'canManageUsers' as const },
   { icon: BarChart3, label: 'Relatórios', path: '/relatorios', permission: 'canViewReports' as const },
   { icon: Settings, label: 'Configurações', path: '/configuracoes', permission: 'canManageSettings' as const },
