@@ -1,10 +1,13 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, Search, Filter, User, Mail, Phone, Calendar, MapPin, Shield, Award, Edit, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from '@/contexts/AuthContext';
 import PermissionGuard from '@/components/auth/PermissionGuard';
+import TeamMemberForm from '@/components/team/TeamMemberForm';
+import TeamStats from '@/components/team/TeamStats';
+import TeamMemberCard from '@/components/team/TeamMemberCard';
+import TeamSearch from '@/components/team/TeamSearch';
 
 const Equipe = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,7 +21,6 @@ const Equipe = () => {
     taxa: '',
   });
   const { toast } = useToast();
-  const { hasPermission } = useAuth();
 
   const membros = [
     {
@@ -107,21 +109,6 @@ const Equipe = () => {
     setShowAddForm(false);
   };
 
-  const getCargoColor = (cargo: string) => {
-    switch (cargo) {
-      case 'Advogado Sênior':
-        return 'bg-purple-900/50 text-purple-400';
-      case 'Advogada Plena':
-        return 'bg-blue-900/50 text-blue-400';
-      case 'Estagiário':
-        return 'bg-green-900/50 text-green-400';
-      case 'Secretária Jurídica':
-        return 'bg-yellow-900/50 text-yellow-400';
-      default:
-        return 'bg-gray-900/50 text-gray-400';
-    }
-  };
-
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -142,195 +129,24 @@ const Equipe = () => {
 
       {/* Add Member Form */}
       {showAddForm && (
-        <PermissionGuard permission="canManageUsers">
-          <div className="bg-dark-card rounded-lg p-6 border border-gray-800 mb-6">
-            <h3 className="text-lg font-medium text-white mb-4">Adicionar Novo Membro</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                placeholder="Nome completo"
-                value={newMember.nome}
-                onChange={(e) => setNewMember({ ...newMember, nome: e.target.value })}
-                className="bg-gray-800 border-gray-700 text-white"
-              />
-              <Input
-                placeholder="Email"
-                type="email"
-                value={newMember.email}
-                onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
-                className="bg-gray-800 border-gray-700 text-white"
-              />
-              <Input
-                placeholder="Telefone"
-                value={newMember.telefone}
-                onChange={(e) => setNewMember({ ...newMember, telefone: e.target.value })}
-                className="bg-gray-800 border-gray-700 text-white"
-              />
-              <select
-                value={newMember.cargo}
-                onChange={(e) => setNewMember({ ...newMember, cargo: e.target.value })}
-                className="bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-white"
-              >
-                <option value="">Selecione o cargo</option>
-                <option value="Advogado Sênior">Advogado Sênior</option>
-                <option value="Advogado Pleno">Advogado Pleno</option>
-                <option value="Advogado Júnior">Advogado Júnior</option>
-                <option value="Estagiário">Estagiário</option>
-                <option value="Secretária Jurídica">Secretária Jurídica</option>
-              </select>
-              <Input
-                placeholder="Especialidade"
-                value={newMember.especialidade}
-                onChange={(e) => setNewMember({ ...newMember, especialidade: e.target.value })}
-                className="bg-gray-800 border-gray-700 text-white"
-              />
-              <Input
-                placeholder="Taxa por hora (ex: R$ 300)"
-                value={newMember.taxa}
-                onChange={(e) => setNewMember({ ...newMember, taxa: e.target.value })}
-                className="bg-gray-800 border-gray-700 text-white"
-              />
-            </div>
-            <div className="flex gap-2 mt-4">
-              <Button onClick={handleAddMember} className="bg-primary hover:bg-primary-hover">
-                Adicionar Membro
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowAddForm(false)}
-                className="border-gray-700 text-gray-300"
-              >
-                Cancelar
-              </Button>
-            </div>
-          </div>
-        </PermissionGuard>
+        <TeamMemberForm
+          formData={newMember}
+          onFormDataChange={setNewMember}
+          onSubmit={handleAddMember}
+          onCancel={() => setShowAddForm(false)}
+        />
       )}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-dark-card rounded-lg p-4 border border-gray-800">
-          <div className="text-2xl font-bold text-white">{membros.length}</div>
-          <div className="text-gray-400 text-sm">Total da Equipe</div>
-        </div>
-        <div className="bg-dark-card rounded-lg p-4 border border-gray-800">
-          <div className="text-2xl font-bold text-blue-400">{membros.filter(m => m.cargo.includes('Advogad')).length}</div>
-          <div className="text-gray-400 text-sm">Advogados</div>
-        </div>
-        <div className="bg-dark-card rounded-lg p-4 border border-gray-800">
-          <div className="text-2xl font-bold text-green-400">{membros.filter(m => m.status === 'Ativo').length}</div>
-          <div className="text-gray-400 text-sm">Ativos</div>
-        </div>
-        <div className="bg-dark-card rounded-lg p-4 border border-gray-800">
-          <div className="text-2xl font-bold text-purple-400">{membros.reduce((sum, m) => sum + m.casos, 0)}</div>
-          <div className="text-gray-400 text-sm">Casos Ativos</div>
-        </div>
-      </div>
+      <TeamStats members={membros} />
 
       {/* Search */}
-      <div className="bg-dark-card rounded-lg p-4 border border-gray-800 shadow-lg mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search size={16} className="absolute left-3 top-3 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="Pesquisar membros da equipe..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-gray-800 border-gray-700 text-white"
-              />
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" className="border-gray-700 text-gray-300">
-              <Filter size={16} className="mr-2" />
-              Filtros
-            </Button>
-            <Button variant="outline" className="border-gray-700 text-gray-300">
-              Relatório
-            </Button>
-          </div>
-        </div>
-      </div>
+      <TeamSearch searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 
       {/* Team Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredMembros.map((membro) => (
-          <div key={membro.id} className="bg-dark-card rounded-lg p-6 border border-gray-800 shadow-lg">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center">
-                <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
-                  <img
-                    src={membro.avatar}
-                    alt={membro.nome}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white">{membro.nome}</h3>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCargoColor(membro.cargo)}`}>
-                    {membro.cargo}
-                  </span>
-                </div>
-              </div>
-              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
-                <User size={16} />
-              </Button>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center text-gray-300">
-                <Award size={14} className="mr-2 text-gray-400" />
-                <span className="text-sm">{membro.especialidade}</span>
-              </div>
-              
-              <div className="flex items-center text-gray-300">
-                <Mail size={14} className="mr-2 text-gray-400" />
-                <span className="text-sm">{membro.email}</span>
-              </div>
-              
-              <div className="flex items-center text-gray-300">
-                <Phone size={14} className="mr-2 text-gray-400" />
-                <span className="text-sm">{membro.telefone}</span>
-              </div>
-              
-              <div className="flex items-center text-gray-300">
-                <Calendar size={14} className="mr-2 text-gray-400" />
-                <span className="text-sm">
-                  Admitido em {new Date(membro.dataAdmissao).toLocaleDateString('pt-BR')}
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-4 border-t border-gray-700">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center">
-                  <div className="text-lg font-semibold text-white">{membro.casos}</div>
-                  <div className="text-xs text-gray-400">Casos Ativos</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-semibold text-green-400">{membro.taxa}</div>
-                  <div className="text-xs text-gray-400">Taxa/Hora</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-4 border-t border-gray-700">
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="flex-1 border-gray-700 text-gray-300">
-                  Ver Perfil
-                </Button>
-                <PermissionGuard permission="canManageUsers">
-                  <Button variant="outline" size="sm" className="border-gray-700 text-gray-300">
-                    <Edit size={14} />
-                  </Button>
-                  <Button variant="outline" size="sm" className="border-red-700 text-red-400 hover:bg-red-900/20">
-                    <Trash2 size={14} />
-                  </Button>
-                </PermissionGuard>
-              </div>
-            </div>
-          </div>
+          <TeamMemberCard key={membro.id} member={membro} />
         ))}
       </div>
 
