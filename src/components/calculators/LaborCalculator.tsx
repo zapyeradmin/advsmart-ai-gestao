@@ -7,11 +7,15 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Briefcase } from 'lucide-react';
 
+interface CalculationResult {
+  [key: string]: number;
+}
+
 const LaborCalculator = () => {
   const [salary, setSalary] = useState('');
   const [months, setMonths] = useState('');
   const [calculationType, setCalculationType] = useState('');
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<CalculationResult | null>(null);
 
   const calculateLabor = () => {
     const salarioBase = parseFloat(salary);
@@ -19,7 +23,7 @@ const LaborCalculator = () => {
 
     if (!salarioBase || !meses || !calculationType) return;
 
-    let calculation = {};
+    let calculation: CalculationResult = {};
 
     switch (calculationType) {
       case 'rescisao':
@@ -148,7 +152,7 @@ const LaborCalculator = () => {
                       <div className="flex justify-between font-bold">
                         <span className="text-primary">Total Aproximado:</span>
                         <span className="text-primary">
-                          R$ {Object.values(result).reduce((sum: number, val: any) => sum + (val || 0), 0).toFixed(2)}
+                          R$ {Object.values(result).reduce((sum: number, val: number) => sum + val, 0).toFixed(2)}
                         </span>
                       </div>
                     </div>

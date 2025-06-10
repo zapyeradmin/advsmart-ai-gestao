@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Calculator, FileText, Clock, DollarSign, Scale, Briefcase } from 'lucide-react';
+import { Calculator, FileText, Clock, DollarSign, Scale, Briefcase, Calendar } from 'lucide-react';
 import CalculatorCard from '@/components/calculators/CalculatorCard';
 import WorkDaysCalculator from '@/components/calculators/WorkDaysCalculator';
 import InterestCalculator from '@/components/calculators/InterestCalculator';
