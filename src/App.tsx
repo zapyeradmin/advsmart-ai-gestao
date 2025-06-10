@@ -7,6 +7,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Dashboard from "./pages/Dashboard";
 import Clientes from "./pages/Clientes";
+import Processos from "./pages/Processos";
+import Financeiro from "./pages/Financeiro";
+import Agenda from "./pages/Agenda";
+import Documentos from "./pages/Documentos";
+import Equipe from "./pages/Equipe";
+import Relatorios from "./pages/Relatorios";
+import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,13 +28,13 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/clientes" element={<Clientes />} />
-            <Route path="/processos" element={<div className="text-white">Página de Processos - Em desenvolvimento</div>} />
-            <Route path="/financeiro" element={<div className="text-white">Página Financeiro - Em desenvolvimento</div>} />
-            <Route path="/agenda" element={<div className="text-white">Página Agenda - Em desenvolvimento</div>} />
-            <Route path="/documentos" element={<div className="text-white">Página Documentos - Em desenvolvimento</div>} />
-            <Route path="/equipe" element={<div className="text-white">Página Equipe - Em desenvolvimento</div>} />
-            <Route path="/relatorios" element={<div className="text-white">Página Relatórios - Em desenvolvimento</div>} />
-            <Route path="/configuracoes" element={<div className="text-white">Página Configurações - Em desenvolvimento</div>} />
+            <Route path="/processos" element={<Processos />} />
+            <Route path="/financeiro" element={<Financeiro />} />
+            <Route path="/agenda" element={<Agenda />} />
+            <Route path="/documentos" element={<Documentos />} />
+            <Route path="/equipe" element={<Equipe />} />
+            <Route path="/relatorios" element={<Relatorios />} />
+            <Route path="/configuracoes" element={<Configuracoes />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
