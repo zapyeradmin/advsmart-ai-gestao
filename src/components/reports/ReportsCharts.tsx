@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell, LineChart, Line, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell, LineChart, Line, ResponsiveContainer, AreaChart, Area, Tooltip } from 'recharts';
 
 const ReportsCharts = () => {
   const receitaDespesas = [
@@ -101,7 +101,14 @@ const ReportsCharts = () => {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--dark-surface))', 
+                      border: '1px solid hsl(var(--dark-border))', 
+                      borderRadius: '8px',
+                      color: 'hsl(var(--dark-text))'
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
