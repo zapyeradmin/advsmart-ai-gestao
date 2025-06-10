@@ -39,7 +39,11 @@ const Sidebar = () => {
   return (
     <aside className="w-64 h-full bg-dark-sidebar flex-shrink-0 fixed left-0 top-0 z-10 flex flex-col border-r border-dark-border">
       <div className="p-6 flex items-center justify-center border-b border-dark-border/50">
-        <h1 className="text-2xl font-pacifico gradient-text">AdvSmart AI</h1>
+        <img 
+          src="/lovable-uploads/9ba09bc9-cbdb-4485-a093-3b6d78dcc7fd.png" 
+          alt="Sistema para Escritórios Inteligentes" 
+          className="h-12 w-auto"
+        />
       </div>
       
       <nav className="flex-1 mt-6 px-4 custom-scrollbar overflow-y-auto">
