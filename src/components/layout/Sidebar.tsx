@@ -14,35 +14,39 @@ import {
   Bot
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { useAuth } from '@/contexts/AuthContext';
+import UserProfile from '@/components/auth/UserProfile';
+import PermissionGuard from '@/components/auth/PermissionGuard';
 
 const menuItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
-  { icon: Users, label: 'Clientes', path: '/clientes' },
-  { icon: FileText, label: 'Processos', path: '/processos' },
-  { icon: DollarSign, label: 'Financeiro', path: '/financeiro' },
-  { icon: Calendar, label: 'Agenda', path: '/agenda' },
-  { icon: File, label: 'Documentos', path: '/documentos' },
-  { icon: UserCheck, label: 'Equipe', path: '/equipe' },
-  { icon: BarChart3, label: 'Relatórios', path: '/relatorios' },
-  { icon: Settings, label: 'Configurações', path: '/configuracoes' },
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/', permission: null },
+  { icon: Users, label: 'Clientes', path: '/clientes', permission: 'canManageClients' as const },
+  { icon: FileText, label: 'Processos', path: '/processos', permission: 'canManageProcesses' as const },
+  { icon: DollarSign, label: 'Financeiro', path: '/financeiro', permission: 'canViewFinancial' as const },
+  { icon: Calendar, label: 'Agenda', path: '/agenda', permission: null },
+  { icon: File, label: 'Documentos', path: '/documentos', permission: 'canManageDocuments' as const },
+  { icon: UserCheck, label: 'Equipe', path: '/equipe', permission: 'canManageUsers' as const },
+  { icon: BarChart3, label: 'Relatórios', path: '/relatorios', permission: 'canViewReports' as const },
+  { icon: Settings, label: 'Configurações', path: '/configuracoes', permission: 'canManageSettings' as const },
 ];
 
 const Sidebar = () => {
   const location = useLocation();
+  const { user } = useAuth();
 
   return (
-    <aside className="w-64 h-full bg-dark-surface flex-shrink-0 fixed left-0 top-0 z-10">
+    <aside className="w-64 h-full bg-dark-surface flex-shrink-0 fixed left-0 top-0 z-10 flex flex-col">
       <div className="p-4 flex items-center justify-center border-b border-gray-700/20">
         <h1 className="text-2xl font-pacifico text-white">AdvSmart AI</h1>
       </div>
       
-      <nav className="mt-6 px-4 custom-scrollbar overflow-y-auto h-[calc(100vh-80px)]">
+      <nav className="flex-1 mt-6 px-4 custom-scrollbar overflow-y-auto">
         <div className="space-y-2">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
             
-            return (
+            const menuLink = (
               <Link
                 key={item.path}
                 to={item.path}
@@ -56,6 +60,20 @@ const Sidebar = () => {
                 <span>{item.label}</span>
               </Link>
             );
+
+            if (item.permission) {
+              return (
+                <PermissionGuard
+                  key={item.path}
+                  permission={item.permission}
+                  fallback={null}
+                >
+                  {menuLink}
+                </PermissionGuard>
+              );
+            }
+
+            return menuLink;
           })}
         </div>
         
@@ -77,6 +95,8 @@ const Sidebar = () => {
           </div>
         </div>
       </nav>
+      
+      <UserProfile />
     </aside>
   );
 };
