@@ -15,11 +15,11 @@ const ReportsCharts = () => {
   ];
 
   const processosPorArea = [
-    { name: 'Trabalhista', value: 35, color: 'hsl(var(--primary))' },
-    { name: 'Cível', value: 25, color: 'hsl(var(--success))' },
-    { name: 'Tributário', value: 20, color: 'hsl(var(--warning))' },
-    { name: 'Empresarial', value: 15, color: 'hsl(var(--secondary))' },
-    { name: 'Outros', value: 5, color: 'hsl(var(--muted))' }
+    { name: 'Trabalhista', value: 35, color: '#6366f1' },
+    { name: 'Cível', value: 25, color: '#10b981' },
+    { name: 'Tributário', value: 20, color: '#f59e0b' },
+    { name: 'Empresarial', value: 15, color: '#8b5cf6' },
+    { name: 'Outros', value: 5, color: '#64748b' }
   ];
 
   const performanceAdvogados = [
@@ -40,11 +40,11 @@ const ReportsCharts = () => {
   ];
 
   const chartConfig = {
-    receitas: { label: "Receitas", color: "hsl(var(--success))" },
-    despesas: { label: "Despesas", color: "hsl(var(--destructive))" },
-    saldo: { label: "Saldo", color: "hsl(var(--primary))" },
-    satisfacao: { label: "Satisfação", color: "hsl(var(--warning))" },
-    nps: { label: "NPS", color: "hsl(var(--secondary))" }
+    receitas: { label: "Receitas", color: "#10b981" },
+    despesas: { label: "Despesas", color: "#ef4444" },
+    saldo: { label: "Saldo", color: "#6366f1" },
+    satisfacao: { label: "Satisfação", color: "#f59e0b" },
+    nps: { label: "NPS", color: "#8b5cf6" }
   };
 
   return (
@@ -53,27 +53,48 @@ const ReportsCharts = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="modern-card">
           <CardHeader>
-            <CardTitle className="text-dark-text">Fluxo de Caixa Mensal</CardTitle>
+            <CardTitle className="text-slate-100 font-semibold">Fluxo de Caixa Mensal</CardTitle>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-80">
               <AreaChart data={receitaDespesas}>
                 <defs>
                   <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0.1}/>
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
                   </linearGradient>
                   <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0.1}/>
+                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0.1}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="mes" tick={{ fill: 'hsl(var(--dark-text-secondary))' }} />
-                <YAxis tick={{ fill: 'hsl(var(--dark-text-secondary))' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                <XAxis 
+                  dataKey="mes" 
+                  tick={{ fill: '#e2e8f0', fontSize: 12 }}
+                  axisLine={{ stroke: '#4b5563' }}
+                  tickLine={{ stroke: '#4b5563' }}
+                />
+                <YAxis 
+                  tick={{ fill: '#e2e8f0', fontSize: 12 }}
+                  axisLine={{ stroke: '#4b5563' }}
+                  tickLine={{ stroke: '#4b5563' }}
+                />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Area type="monotone" dataKey="receitas" stroke="hsl(var(--success))" fill="url(#colorReceitas)" />
-                <Area type="monotone" dataKey="despesas" stroke="hsl(var(--destructive))" fill="url(#colorDespesas)" />
+                <Area 
+                  type="monotone" 
+                  dataKey="receitas" 
+                  stroke="#10b981" 
+                  strokeWidth={2}
+                  fill="url(#colorReceitas)" 
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="despesas" 
+                  stroke="#ef4444" 
+                  strokeWidth={2}
+                  fill="url(#colorDespesas)" 
+                />
               </AreaChart>
             </ChartContainer>
           </CardContent>
@@ -81,7 +102,7 @@ const ReportsCharts = () => {
 
         <Card className="modern-card">
           <CardHeader>
-            <CardTitle className="text-dark-text">Processos por Área Jurídica</CardTitle>
+            <CardTitle className="text-slate-100 font-semibold">Processos por Área Jurídica</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-80">
@@ -103,11 +124,14 @@ const ReportsCharts = () => {
                   </Pie>
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: 'hsl(var(--dark-surface))', 
-                      border: '1px solid hsl(var(--dark-border))', 
-                      borderRadius: '8px',
-                      color: 'hsl(var(--dark-text))'
+                      backgroundColor: '#1e293b', 
+                      border: '1px solid #475569', 
+                      borderRadius: '12px',
+                      color: '#f1f5f9',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)'
                     }}
+                    labelStyle={{ color: '#f1f5f9', fontWeight: '600' }}
+                    itemStyle={{ color: '#e2e8f0' }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -120,16 +144,30 @@ const ReportsCharts = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="modern-card">
           <CardHeader>
-            <CardTitle className="text-dark-text">Performance dos Advogados</CardTitle>
+            <CardTitle className="text-slate-100 font-semibold">Performance dos Advogados</CardTitle>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-80">
               <BarChart data={performanceAdvogados}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="nome" tick={{ fill: 'hsl(var(--dark-text-secondary))' }} />
-                <YAxis tick={{ fill: 'hsl(var(--dark-text-secondary))' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                <XAxis 
+                  dataKey="nome" 
+                  tick={{ fill: '#e2e8f0', fontSize: 11 }}
+                  axisLine={{ stroke: '#4b5563' }}
+                  tickLine={{ stroke: '#4b5563' }}
+                />
+                <YAxis 
+                  tick={{ fill: '#e2e8f0', fontSize: 12 }}
+                  axisLine={{ stroke: '#4b5563' }}
+                  tickLine={{ stroke: '#4b5563' }}
+                />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="casos" fill="hsl(var(--primary))" name="Casos" radius={[4, 4, 0, 0]} />
+                <Bar 
+                  dataKey="casos" 
+                  fill="#6366f1" 
+                  name="Casos" 
+                  radius={[6, 6, 0, 0]}
+                />
               </BarChart>
             </ChartContainer>
           </CardContent>
@@ -137,29 +175,40 @@ const ReportsCharts = () => {
 
         <Card className="modern-card">
           <CardHeader>
-            <CardTitle className="text-dark-text">Evolução da Satisfação</CardTitle>
+            <CardTitle className="text-slate-100 font-semibold">Evolução da Satisfação</CardTitle>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-80">
               <LineChart data={clientesSatisfacao}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="mes" tick={{ fill: 'hsl(var(--dark-text-secondary))' }} />
-                <YAxis tick={{ fill: 'hsl(var(--dark-text-secondary))' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                <XAxis 
+                  dataKey="mes" 
+                  tick={{ fill: '#e2e8f0', fontSize: 12 }}
+                  axisLine={{ stroke: '#4b5563' }}
+                  tickLine={{ stroke: '#4b5563' }}
+                />
+                <YAxis 
+                  tick={{ fill: '#e2e8f0', fontSize: 12 }}
+                  axisLine={{ stroke: '#4b5563' }}
+                  tickLine={{ stroke: '#4b5563' }}
+                />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Line 
                   type="monotone" 
                   dataKey="satisfacao" 
-                  stroke="hsl(var(--warning))" 
+                  stroke="#f59e0b" 
                   strokeWidth={3} 
-                  dot={{ fill: 'hsl(var(--warning))' }}
+                  dot={{ fill: '#f59e0b', strokeWidth: 2, r: 5 }}
+                  activeDot={{ r: 7, stroke: '#f59e0b', strokeWidth: 2 }}
                   name="Satisfação"
                 />
                 <Line 
                   type="monotone" 
                   dataKey="nps" 
-                  stroke="hsl(var(--secondary))" 
+                  stroke="#8b5cf6" 
                   strokeWidth={3} 
-                  dot={{ fill: 'hsl(var(--secondary))' }}
+                  dot={{ fill: '#8b5cf6', strokeWidth: 2, r: 5 }}
+                  activeDot={{ r: 7, stroke: '#8b5cf6', strokeWidth: 2 }}
                   name="NPS"
                 />
               </LineChart>
