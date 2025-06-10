@@ -2,16 +2,23 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Search, Filter, DollarSign, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import ContasManager from '@/components/financial/ContasManager';
+import CustosFixosManager from '@/components/financial/CustosFixosManager';
+import ParceirosManager from '@/components/financial/ParceirosManager';
+import MetricasFinanceiras from '@/components/financial/MetricasFinanceiras';
+import { Transacao, Parceiro, CustoFixo } from '@/types/financial';
 
 const Financeiro = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
 
-  const transacoes = [
+  // Estados para dados financeiros
+  const [transacoes, setTransacoes] = useState<Transacao[]>([
     {
-      id: 1,
+      id: '1',
       tipo: 'Receita',
       descricao: 'Honorários - Maria Silva Santos',
       valor: 2500.00,
@@ -21,29 +28,107 @@ const Financeiro = () => {
       cliente: 'Maria Silva Santos'
     },
     {
-      id: 2,
+      id: '2',
       tipo: 'Despesa',
       descricao: 'Aluguel do escritório',
       valor: 4500.00,
       data: '2024-01-05',
       categoria: 'Infraestrutura',
       status: 'Pago',
-      cliente: null
     },
     {
-      id: 3,
+      id: '3',
       tipo: 'Receita',
       descricao: 'Consultoria Jurídica - Empresa ABC',
       valor: 8000.00,
       data: '2024-01-08',
+      dataVencimento: '2024-02-08',
       categoria: 'Consultoria',
       status: 'Pendente',
       cliente: 'Empresa ABC Ltda.'
     }
-  ];
+  ]);
 
-  const totalReceitas = transacoes.filter(t => t.tipo === 'Receita').reduce((sum, t) => sum + t.valor, 0);
-  const totalDespesas = transacoes.filter(t => t.tipo === 'Despesa').reduce((sum, t) => sum + t.valor, 0);
+  const [custosFixos, setCustosFixos] = useState<CustoFixo[]>([
+    {
+      id: '1',
+      descricao: 'Aluguel do Escritório',
+      valor: 4500.00,
+      categoria: 'Aluguel',
+      diaVencimento: 10,
+      ativo: true
+    },
+    {
+      id: '2',
+      descricao: 'Internet',
+      valor: 150.00,
+      categoria: 'Internet',
+      diaVencimento: 15,
+      ativo: true
+    }
+  ]);
+
+  const [parceiros, setParceiros] = useState<Parceiro[]>([
+    {
+      id: '1',
+      nome: 'Dr. Carlos Silva',
+      tipo: 'Advogado',
+      contato: 'carlos@exemplo.com',
+      percentual: 20,
+      ltv: 15000,
+      ativo: true
+    },
+    {
+      id: '2',
+      nome: 'Ana Captadora',
+      tipo: 'Captador',
+      contato: '(11) 99999-9999',
+      valorFixo: 500,
+      ltv: 8000,
+      ativo: true
+    }
+  ]);
+
+  // Handlers para transações
+  const handleAddTransacao = (transacao: Transacao) => {
+    setTransacoes(prev => [...prev, transacao]);
+  };
+
+  const handleUpdateTransacao = (id: string, transacao: Transacao) => {
+    setTransacoes(prev => prev.map(t => t.id === id ? { ...transacao, id } : t));
+  };
+
+  // Handlers para custos fixos
+  const handleAddCusto = (custo: CustoFixo) => {
+    setCustosFixos(prev => [...prev, custo]);
+  };
+
+  const handleUpdateCusto = (id: string, custo: CustoFixo) => {
+    setCustosFixos(prev => prev.map(c => c.id === id ? { ...custo, id } : c));
+  };
+
+  const handleDeleteCusto = (id: string) => {
+    setCustosFixos(prev => prev.filter(c => c.id !== id));
+    toast({ title: "Custo fixo removido com sucesso!" });
+  };
+
+  // Handlers para parceiros
+  const handleAddParceiro = (parceiro: Parceiro) => {
+    setParceiros(prev => [...prev, parceiro]);
+  };
+
+  const handleUpdateParceiro = (id: string, parceiro: Parceiro) => {
+    setParceiros(prev => prev.map(p => p.id === id ? { ...parceiro, id } : p));
+  };
+
+  const handleDeleteParceiro = (id: string) => {
+    setParceiros(prev => prev.filter(p => p.id !== id));
+    toast({ title: "Parceiro removido com sucesso!" });
+  };
+
+  // Cálculos para visão geral
+  const totalReceitas = transacoes.filter(t => t.tipo === 'Receita' && t.status === 'Pago').reduce((sum, t) => sum + t.valor, 0);
+  const totalDespesas = transacoes.filter(t => t.tipo === 'Despesa' && t.status === 'Pago').reduce((sum, t) => sum + t.valor, 0);
   const saldo = totalReceitas - totalDespesas;
 
   const filteredTransacoes = transacoes.filter(transacao =>
@@ -52,30 +137,16 @@ const Financeiro = () => {
     (transacao.cliente && transacao.cliente.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const handleNovaTransacao = () => {
-    toast({
-      title: "Em desenvolvimento",
-      description: "Funcionalidade será implementada em breve.",
-    });
-  };
-
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Financeiro</h1>
-          <p className="text-gray-400">Controle suas receitas, despesas e fluxo de caixa</p>
+          <h1 className="text-2xl font-semibold text-white">Gestão Financeira Completa</h1>
+          <p className="text-gray-400">Controle total das finanças do escritório jurídico</p>
         </div>
-        <Button
-          className="bg-primary hover:bg-primary-hover text-white"
-          onClick={handleNovaTransacao}
-        >
-          <Plus size={16} className="mr-2" />
-          Nova Transação
-        </Button>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards de Visão Geral */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-dark-card rounded-lg p-4 border border-gray-800">
           <div className="flex items-center justify-between">
@@ -118,93 +189,86 @@ const Financeiro = () => {
         </div>
       </div>
 
-      {/* Filters and Search */}
-      <div className="bg-dark-card rounded-lg p-4 border border-gray-800 shadow-lg mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search size={16} className="absolute left-3 top-3 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="Pesquisar transações..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-gray-800 border-gray-700 text-white"
-              />
+      {/* Tabs para diferentes seções */}
+      <Tabs defaultValue="contas" className="w-full">
+        <TabsList className="grid w-full grid-cols-5 bg-gray-800">
+          <TabsTrigger value="contas" className="text-gray-300">Contas</TabsTrigger>
+          <TabsTrigger value="custos-fixos" className="text-gray-300">Custos Fixos</TabsTrigger>
+          <TabsTrigger value="custos-variaveis" className="text-gray-300">Custos Variáveis</TabsTrigger>
+          <TabsTrigger value="parceiros" className="text-gray-300">Parceiros</TabsTrigger>
+          <TabsTrigger value="metricas" className="text-gray-300">Métricas</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="contas" className="space-y-6">
+          <ContasManager 
+            transacoes={transacoes}
+            onAddTransacao={handleAddTransacao}
+            onUpdateTransacao={handleUpdateTransacao}
+          />
+        </TabsContent>
+
+        <TabsContent value="custos-fixos" className="space-y-6">
+          <CustosFixosManager 
+            custosFixos={custosFixos}
+            onAddCusto={handleAddCusto}
+            onUpdateCusto={handleUpdateCusto}
+            onDeleteCusto={handleDeleteCusto}
+          />
+        </TabsContent>
+
+        <TabsContent value="custos-variaveis" className="space-y-6">
+          <div className="bg-dark-card rounded-lg p-6 border border-gray-800">
+            <h3 className="text-lg font-medium text-white mb-4">Custos Variáveis</h3>
+            <p className="text-gray-400 mb-4">Controle de custas processuais, parceiros e investimentos em marketing</p>
+            
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Custas Processuais</h4>
+                  <p className="text-2xl font-bold text-blue-400">
+                    R$ {transacoes.filter(t => t.categoria === 'Custas Processuais').reduce((sum, t) => sum + t.valor, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Parceiros</h4>
+                  <p className="text-2xl font-bold text-purple-400">
+                    R$ {transacoes.filter(t => t.categoria === 'Parceiro Advogado').reduce((sum, t) => sum + t.valor, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Marketing</h4>
+                  <p className="text-2xl font-bold text-orange-400">
+                    R$ {transacoes.filter(t => t.categoria.includes('Anúncios') || t.categoria.includes('Marketing')).reduce((sum, t) => sum + t.valor, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Outros</h4>
+                  <p className="text-2xl font-bold text-gray-400">
+                    R$ {transacoes.filter(t => !['Custas Processuais', 'Parceiro Advogado', 'Anúncios', 'Marketing'].includes(t.categoria) && t.tipo === 'Despesa').reduce((sum, t) => sum + t.valor, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" className="border-gray-700 text-gray-300">
-              <Filter size={16} className="mr-2" />
-              Filtros
-            </Button>
-            <Button variant="outline" className="border-gray-700 text-gray-300">
-              Relatório
-            </Button>
-          </div>
-        </div>
-      </div>
+        </TabsContent>
 
-      {/* Transactions Table */}
-      <div className="bg-dark-card rounded-lg border border-gray-800 shadow-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-800">
-              <tr>
-                <th className="text-left p-4 text-gray-300 font-medium">Data</th>
-                <th className="text-left p-4 text-gray-300 font-medium">Descrição</th>
-                <th className="text-left p-4 text-gray-300 font-medium">Categoria</th>
-                <th className="text-left p-4 text-gray-300 font-medium">Cliente</th>
-                <th className="text-left p-4 text-gray-300 font-medium">Tipo</th>
-                <th className="text-left p-4 text-gray-300 font-medium">Valor</th>
-                <th className="text-left p-4 text-gray-300 font-medium">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTransacoes.map((transacao) => (
-                <tr key={transacao.id} className="border-t border-gray-700 hover:bg-gray-800/50">
-                  <td className="p-4">
-                    <div className="flex items-center text-gray-300">
-                      <Calendar size={12} className="mr-2" />
-                      {new Date(transacao.data).toLocaleDateString('pt-BR')}
-                    </div>
-                  </td>
-                  <td className="p-4 text-white">{transacao.descricao}</td>
-                  <td className="p-4">
-                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-900/50 text-blue-400">
-                      {transacao.categoria}
-                    </span>
-                  </td>
-                  <td className="p-4 text-gray-300">{transacao.cliente || '-'}</td>
-                  <td className="p-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      transacao.tipo === 'Receita' 
-                        ? 'bg-green-900/50 text-green-400' 
-                        : 'bg-red-900/50 text-red-400'
-                    }`}>
-                      {transacao.tipo}
-                    </span>
-                  </td>
-                  <td className={`p-4 font-semibold ${
-                    transacao.tipo === 'Receita' ? 'text-green-400' : 'text-red-400'
-                  }`}>
-                    {transacao.tipo === 'Receita' ? '+' : '-'}R$ {transacao.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </td>
-                  <td className="p-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      transacao.status === 'Pago' 
-                        ? 'bg-green-900/50 text-green-400' 
-                        : 'bg-yellow-900/50 text-yellow-400'
-                    }`}>
-                      {transacao.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        <TabsContent value="parceiros" className="space-y-6">
+          <ParceirosManager 
+            parceiros={parceiros}
+            onAddParceiro={handleAddParceiro}
+            onUpdateParceiro={handleUpdateParceiro}
+            onDeleteParceiro={handleDeleteParceiro}
+          />
+        </TabsContent>
+
+        <TabsContent value="metricas" className="space-y-6">
+          <MetricasFinanceiras 
+            transacoes={transacoes}
+            parceiros={parceiros}
+            custosFixos={custosFixos}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
