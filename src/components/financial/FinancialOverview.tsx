@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, AlertCircle } from 'lucide-react';
 import { Transacao } from '@/types/financial';
 
 interface FinancialOverviewProps {
@@ -12,48 +12,72 @@ const FinancialOverview: React.FC<FinancialOverviewProps> = ({ transacoes }) => 
   const totalReceitas = transacoes.filter(t => t.tipo === 'Receita' && t.status === 'Pago').reduce((sum, t) => sum + t.valor, 0);
   const totalDespesas = transacoes.filter(t => t.tipo === 'Despesa' && t.status === 'Pago').reduce((sum, t) => sum + t.valor, 0);
   const saldo = totalReceitas - totalDespesas;
+  const pendencias = transacoes.filter(t => t.status === 'Pendente').length;
+
+  const cards = [
+    {
+      title: 'Total Receitas',
+      value: totalReceitas,
+      icon: TrendingUp,
+      color: 'text-status-green',
+      bgColor: 'bg-gradient-to-r from-status-green/10 to-status-green/5',
+      borderColor: 'border-status-green/20'
+    },
+    {
+      title: 'Total Despesas',
+      value: totalDespesas,
+      icon: TrendingDown,
+      color: 'text-status-red',
+      bgColor: 'bg-gradient-to-r from-status-red/10 to-status-red/5',
+      borderColor: 'border-status-red/20'
+    },
+    {
+      title: 'Saldo Atual',
+      value: saldo,
+      icon: DollarSign,
+      color: saldo >= 0 ? 'text-status-green' : 'text-status-red',
+      bgColor: saldo >= 0 ? 'bg-gradient-to-r from-status-green/10 to-status-green/5' : 'bg-gradient-to-r from-status-red/10 to-status-red/5',
+      borderColor: saldo >= 0 ? 'border-status-green/20' : 'border-status-red/20'
+    },
+    {
+      title: 'Pendências',
+      value: pendencias,
+      icon: AlertCircle,
+      color: 'text-status-yellow',
+      bgColor: 'bg-gradient-to-r from-status-yellow/10 to-status-yellow/5',
+      borderColor: 'border-status-yellow/20',
+      isCount: true
+    }
+  ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <div className="bg-dark-card rounded-lg p-4 border border-gray-800">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-2xl font-bold text-green-400">
-              R$ {totalReceitas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      {cards.map((card) => {
+        const Icon = card.icon;
+        return (
+          <div
+            key={card.title}
+            className={`modern-card p-6 border ${card.borderColor} ${card.bgColor} hover:scale-105 transition-all duration-300`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <div className={`text-2xl font-bold ${card.color} mb-1`}>
+                  {card.isCount 
+                    ? card.value 
+                    : `R$ ${card.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+                  }
+                </div>
+                <div className="text-dark-text-secondary text-sm font-medium">
+                  {card.title}
+                </div>
+              </div>
+              <div className={`w-12 h-12 flex items-center justify-center rounded-xl ${card.bgColor} ${card.color}`}>
+                <Icon size={24} />
+              </div>
             </div>
-            <div className="text-gray-400 text-sm">Total Receitas</div>
           </div>
-          <TrendingUp className="text-green-400" size={24} />
-        </div>
-      </div>
-      <div className="bg-dark-card rounded-lg p-4 border border-gray-800">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-2xl font-bold text-red-400">
-              R$ {totalDespesas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-            </div>
-            <div className="text-gray-400 text-sm">Total Despesas</div>
-          </div>
-          <TrendingDown className="text-red-400" size={24} />
-        </div>
-      </div>
-      <div className="bg-dark-card rounded-lg p-4 border border-gray-800">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className={`text-2xl font-bold ${saldo >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              R$ {saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-            </div>
-            <div className="text-gray-400 text-sm">Saldo Atual</div>
-          </div>
-          <DollarSign className={saldo >= 0 ? 'text-green-400' : 'text-red-400'} size={24} />
-        </div>
-      </div>
-      <div className="bg-dark-card rounded-lg p-4 border border-gray-800">
-        <div className="text-2xl font-bold text-yellow-400">
-          {transacoes.filter(t => t.status === 'Pendente').length}
-        </div>
-        <div className="text-gray-400 text-sm">Pendências</div>
-      </div>
+        );
+      })}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -36,9 +37,9 @@ const Sidebar = () => {
   const { user } = useAuth();
 
   return (
-    <aside className="w-64 h-full bg-dark-surface flex-shrink-0 fixed left-0 top-0 z-10 flex flex-col">
-      <div className="p-4 flex items-center justify-center border-b border-gray-700/20">
-        <h1 className="text-2xl font-pacifico text-white">AdvSmart AI</h1>
+    <aside className="w-64 h-full bg-dark-sidebar flex-shrink-0 fixed left-0 top-0 z-10 flex flex-col border-r border-dark-border">
+      <div className="p-6 flex items-center justify-center border-b border-dark-border/50">
+        <h1 className="text-2xl font-pacifico gradient-text">AdvSmart AI</h1>
       </div>
       
       <nav className="flex-1 mt-6 px-4 custom-scrollbar overflow-y-auto">
@@ -51,14 +52,14 @@ const Sidebar = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`sidebar-link flex items-center p-3 text-gray-200 rounded-md hover:bg-gray-700 transition-all duration-200 ${
+                className={`sidebar-link flex items-center p-3 text-dark-text-secondary rounded-xl transition-all duration-300 group ${
                   isActive ? 'active' : ''
                 }`}
               >
-                <div className="w-6 h-6 flex items-center justify-center mr-3">
-                  <Icon size={18} />
+                <div className="w-6 h-6 flex items-center justify-center mr-4">
+                  <Icon size={20} className="transition-transform duration-200 group-hover:scale-110" />
                 </div>
-                <span>{item.label}</span>
+                <span className="font-medium">{item.label}</span>
               </Link>
             );
 
@@ -78,17 +79,22 @@ const Sidebar = () => {
           })}
         </div>
         
-        <div className="mt-8 border-t border-gray-700 pt-4">
-          <div className="bg-gray-800 p-4 rounded-lg">
-            <div className="flex items-center mb-3">
-              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-primary text-white mr-2">
-                <Bot size={16} />
+        <div className="mt-8 border-t border-dark-border pt-6">
+          <div className="modern-card p-5">
+            <div className="flex items-center mb-4">
+              <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-r from-primary to-dark-accent text-white mr-3">
+                <Bot size={20} />
               </div>
-              <span className="font-medium">Assistente IA</span>
+              <div>
+                <h4 className="font-semibold text-dark-text">Assistente IA</h4>
+                <p className="text-xs text-dark-text-muted">Sempre pronto para ajudar</p>
+              </div>
             </div>
-            <p className="text-sm text-gray-400 mb-3">Precisa de ajuda com alguma tarefa?</p>
+            <p className="text-sm text-dark-text-secondary mb-4">Precisa de ajuda com alguma tarefa? Consulte nossa IA especializada.</p>
             <Button 
-              className="w-full bg-primary text-white py-2 px-3 rounded-button text-sm hover:bg-primary-hover transition-colors"
+              variant="default"
+              size="sm"
+              className="w-full"
               onClick={() => console.log('AI Modal functionality to be implemented')}
             >
               Consultar IA
