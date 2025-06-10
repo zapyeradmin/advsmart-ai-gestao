@@ -70,7 +70,7 @@ const Sidebar = () => {
             <p className="text-sm text-gray-400 mb-3">Precisa de ajuda com alguma tarefa?</p>
             <Button 
               className="w-full bg-primary text-white py-2 px-3 rounded-button text-sm hover:bg-primary-hover transition-colors"
-              onClick={() => window.openAIModal?.()}
+              onClick={() => console.log('AI Modal functionality to be implemented')}
             >
               Consultar IA
             </Button>
