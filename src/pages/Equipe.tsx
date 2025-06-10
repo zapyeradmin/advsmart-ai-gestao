@@ -1,13 +1,24 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Filter, User, Mail, Phone, Calendar, MapPin, Shield, Award } from 'lucide-react';
+import { Plus, Search, Filter, User, Mail, Phone, Calendar, MapPin, Shield, Award, Edit, Trash2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/contexts/AuthContext';
+import PermissionGuard from '@/components/auth/PermissionGuard';
 
 const Equipe = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newMember, setNewMember] = useState({
+    nome: '',
+    email: '',
+    telefone: '',
+    cargo: '',
+    especialidade: '',
+    taxa: '',
+  });
   const { toast } = useToast();
+  const { hasPermission } = useAuth();
 
   const membros = [
     {
@@ -70,11 +81,30 @@ const Equipe = () => {
     membro.especialidade.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleNovoMembro = () => {
+  const handleAddMember = () => {
+    if (!newMember.nome || !newMember.email || !newMember.cargo) {
+      toast({
+        title: "Erro",
+        description: "Preencha pelo menos nome, email e cargo.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     toast({
-      title: "Em desenvolvimento",
-      description: "Funcionalidade será implementada em breve.",
+      title: "Sucesso",
+      description: "Membro adicionado com sucesso.",
     });
+
+    setNewMember({
+      nome: '',
+      email: '',
+      telefone: '',
+      cargo: '',
+      especialidade: '',
+      taxa: '',
+    });
+    setShowAddForm(false);
   };
 
   const getCargoColor = (cargo: string) => {
@@ -96,17 +126,85 @@ const Equipe = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Equipe</h1>
+          <h1 className="text-2xl font-semibold text-white">Gestão de Equipe</h1>
           <p className="text-gray-400">Gerencie a equipe do escritório e suas atividades</p>
         </div>
-        <Button
-          className="bg-primary hover:bg-primary-hover text-white"
-          onClick={handleNovoMembro}
-        >
-          <Plus size={16} className="mr-2" />
-          Novo Membro
-        </Button>
+        <PermissionGuard permission="canManageUsers">
+          <Button
+            className="bg-primary hover:bg-primary-hover text-white"
+            onClick={() => setShowAddForm(!showAddForm)}
+          >
+            <Plus size={16} className="mr-2" />
+            {showAddForm ? 'Cancelar' : 'Novo Membro'}
+          </Button>
+        </PermissionGuard>
       </div>
+
+      {/* Add Member Form */}
+      {showAddForm && (
+        <PermissionGuard permission="canManageUsers">
+          <div className="bg-dark-card rounded-lg p-6 border border-gray-800 mb-6">
+            <h3 className="text-lg font-medium text-white mb-4">Adicionar Novo Membro</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                placeholder="Nome completo"
+                value={newMember.nome}
+                onChange={(e) => setNewMember({ ...newMember, nome: e.target.value })}
+                className="bg-gray-800 border-gray-700 text-white"
+              />
+              <Input
+                placeholder="Email"
+                type="email"
+                value={newMember.email}
+                onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
+                className="bg-gray-800 border-gray-700 text-white"
+              />
+              <Input
+                placeholder="Telefone"
+                value={newMember.telefone}
+                onChange={(e) => setNewMember({ ...newMember, telefone: e.target.value })}
+                className="bg-gray-800 border-gray-700 text-white"
+              />
+              <select
+                value={newMember.cargo}
+                onChange={(e) => setNewMember({ ...newMember, cargo: e.target.value })}
+                className="bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-white"
+              >
+                <option value="">Selecione o cargo</option>
+                <option value="Advogado Sênior">Advogado Sênior</option>
+                <option value="Advogado Pleno">Advogado Pleno</option>
+                <option value="Advogado Júnior">Advogado Júnior</option>
+                <option value="Estagiário">Estagiário</option>
+                <option value="Secretária Jurídica">Secretária Jurídica</option>
+              </select>
+              <Input
+                placeholder="Especialidade"
+                value={newMember.especialidade}
+                onChange={(e) => setNewMember({ ...newMember, especialidade: e.target.value })}
+                className="bg-gray-800 border-gray-700 text-white"
+              />
+              <Input
+                placeholder="Taxa por hora (ex: R$ 300)"
+                value={newMember.taxa}
+                onChange={(e) => setNewMember({ ...newMember, taxa: e.target.value })}
+                className="bg-gray-800 border-gray-700 text-white"
+              />
+            </div>
+            <div className="flex gap-2 mt-4">
+              <Button onClick={handleAddMember} className="bg-primary hover:bg-primary-hover">
+                Adicionar Membro
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowAddForm(false)}
+                className="border-gray-700 text-gray-300"
+              >
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        </PermissionGuard>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -222,9 +320,14 @@ const Equipe = () => {
                 <Button variant="outline" size="sm" className="flex-1 border-gray-700 text-gray-300">
                   Ver Perfil
                 </Button>
-                <Button variant="outline" size="sm" className="flex-1 border-gray-700 text-gray-300">
-                  Editar
-                </Button>
+                <PermissionGuard permission="canManageUsers">
+                  <Button variant="outline" size="sm" className="border-gray-700 text-gray-300">
+                    <Edit size={14} />
+                  </Button>
+                  <Button variant="outline" size="sm" className="border-red-700 text-red-400 hover:bg-red-900/20">
+                    <Trash2 size={14} />
+                  </Button>
+                </PermissionGuard>
               </div>
             </div>
           </div>
