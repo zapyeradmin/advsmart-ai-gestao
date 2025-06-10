@@ -1,8 +1,7 @@
 
 import React from 'react';
-import { Bell, Search, Settings, User } from 'lucide-react';
+import { Bell, Settings, User } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useAuth } from '@/contexts/AuthContext';
 import NotificationCenter from '@/components/notifications/NotificationCenter';
 
@@ -10,18 +9,7 @@ const Header = () => {
   const { user } = useAuth();
 
   return (
-    <header className="h-16 bg-dark-surface border-b border-gray-800/20 flex items-center justify-between px-6 flex-shrink-0">
-      <div className="flex items-center flex-1">
-        <div className="relative max-w-md w-full">
-          <Search size={16} className="absolute left-3 top-3 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Pesquisar clientes, processos..."
-            className="pl-10 bg-gray-800 border-gray-700 text-white"
-          />
-        </div>
-      </div>
-      
+    <header className="h-16 bg-transparent flex items-center justify-end px-6 flex-shrink-0">
       <div className="flex items-center space-x-4">
         <NotificationCenter />
         
