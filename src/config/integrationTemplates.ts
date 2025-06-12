@@ -1,4 +1,3 @@
-
 import { IntegrationTemplate } from '@/types/integrations';
 import { 
   Calendar, 
@@ -9,10 +8,193 @@ import {
   Users, 
   Globe,
   Zap,
-  Settings
+  Settings,
+  Bot,
+  Brain,
+  Sparkles,
+  MessageSquare,
+  Cpu
 } from 'lucide-react';
 
 export const integrationTemplates: IntegrationTemplate[] = [
+  // AI Services
+  {
+    type: 'openai',
+    name: 'OpenAI',
+    description: 'Integre com GPT-4, GPT-3.5 e outros modelos OpenAI',
+    icon: 'Bot',
+    fields: [
+      {
+        key: 'apiKey',
+        label: 'API Key',
+        type: 'password',
+        required: true,
+        placeholder: 'sk-...'
+      },
+      {
+        key: 'model',
+        label: 'Modelo Padrão',
+        type: 'select',
+        required: false,
+        placeholder: 'Selecione o modelo',
+        options: [
+          { value: 'gpt-4', label: 'GPT-4' },
+          { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
+          { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' }
+        ]
+      },
+      {
+        key: 'maxTokens',
+        label: 'Max Tokens',
+        type: 'number',
+        required: false,
+        placeholder: '2048'
+      }
+    ],
+    webhookEvents: ['ai.request_completed', 'ai.analysis_generated']
+  },
+  {
+    type: 'grok',
+    name: 'Grok (X.AI)',
+    description: 'Acesse o modelo Grok da X.AI para análises avançadas',
+    icon: 'Brain',
+    fields: [
+      {
+        key: 'apiKey',
+        label: 'API Key',
+        type: 'password',
+        required: true,
+        placeholder: 'xai-...'
+      },
+      {
+        key: 'model',
+        label: 'Modelo',
+        type: 'select',
+        required: false,
+        placeholder: 'Selecione o modelo',
+        options: [
+          { value: 'grok-beta', label: 'Grok Beta' },
+          { value: 'grok-vision-beta', label: 'Grok Vision Beta' }
+        ]
+      }
+    ],
+    webhookEvents: ['ai.request_completed', 'ai.analysis_generated']
+  },
+  {
+    type: 'deepseek',
+    name: 'DeepSeek',
+    description: 'Utilize modelos DeepSeek para análise e geração de texto',
+    icon: 'Cpu',
+    fields: [
+      {
+        key: 'apiKey',
+        label: 'API Key',
+        type: 'password',
+        required: true,
+        placeholder: 'sk-...'
+      },
+      {
+        key: 'model',
+        label: 'Modelo',
+        type: 'select',
+        required: false,
+        placeholder: 'Selecione o modelo',
+        options: [
+          { value: 'deepseek-chat', label: 'DeepSeek Chat' },
+          { value: 'deepseek-coder', label: 'DeepSeek Coder' }
+        ]
+      }
+    ],
+    webhookEvents: ['ai.request_completed', 'ai.code_generated']
+  },
+  {
+    type: 'gemini',
+    name: 'Google Gemini',
+    description: 'Integre com os modelos Gemini do Google',
+    icon: 'Sparkles',
+    fields: [
+      {
+        key: 'apiKey',
+        label: 'API Key',
+        type: 'password',
+        required: true,
+        placeholder: 'Sua Google AI API Key'
+      },
+      {
+        key: 'model',
+        label: 'Modelo',
+        type: 'select',
+        required: false,
+        placeholder: 'Selecione o modelo',
+        options: [
+          { value: 'gemini-pro', label: 'Gemini Pro' },
+          { value: 'gemini-pro-vision', label: 'Gemini Pro Vision' },
+          { value: 'gemini-ultra', label: 'Gemini Ultra' }
+        ]
+      }
+    ],
+    webhookEvents: ['ai.request_completed', 'ai.vision_analysis']
+  },
+  {
+    type: 'arcee',
+    name: 'Arcee AI',
+    description: 'Conecte com modelos personalizados da Arcee AI',
+    icon: 'MessageSquare',
+    fields: [
+      {
+        key: 'apiKey',
+        label: 'API Key',
+        type: 'password',
+        required: true,
+        placeholder: 'Sua Arcee API Key'
+      },
+      {
+        key: 'modelId',
+        label: 'Model ID',
+        type: 'text',
+        required: false,
+        placeholder: 'ID do modelo personalizado'
+      }
+    ],
+    webhookEvents: ['ai.request_completed', 'ai.custom_model_used']
+  },
+  {
+    type: 'openrouter',
+    name: 'OpenRouter',
+    description: 'Acesse múltiplos modelos de IA através do OpenRouter',
+    icon: 'Globe',
+    fields: [
+      {
+        key: 'apiKey',
+        label: 'API Key',
+        type: 'password',
+        required: true,
+        placeholder: 'sk-or-...'
+      },
+      {
+        key: 'model',
+        label: 'Modelo Preferido',
+        type: 'select',
+        required: false,
+        placeholder: 'Selecione o modelo',
+        options: [
+          { value: 'anthropic/claude-3-opus', label: 'Claude 3 Opus' },
+          { value: 'openai/gpt-4-turbo', label: 'GPT-4 Turbo' },
+          { value: 'google/gemini-pro', label: 'Gemini Pro' },
+          { value: 'meta-llama/llama-2-70b-chat', label: 'Llama 2 70B' }
+        ]
+      },
+      {
+        key: 'fallbackModel',
+        label: 'Modelo de Fallback',
+        type: 'text',
+        required: false,
+        placeholder: 'Modelo alternativo'
+      }
+    ],
+    webhookEvents: ['ai.request_completed', 'ai.model_switched']
+  },
+  // Google Services
   {
     type: 'google_calendar',
     name: 'Google Calendar',
@@ -103,6 +285,37 @@ export const integrationTemplates: IntegrationTemplate[] = [
     ],
     webhookEvents: ['client.created', 'process.created', 'financial.transaction_created']
   },
+  {
+    type: 'gmail',
+    name: 'Gmail',
+    description: 'Integre com Gmail para automação de emails',
+    icon: 'MessageSquare',
+    fields: [
+      {
+        key: 'clientId',
+        label: 'Client ID',
+        type: 'text',
+        required: true,
+        placeholder: 'Seu Google Client ID'
+      },
+      {
+        key: 'clientSecret',
+        label: 'Client Secret',
+        type: 'password',
+        required: true,
+        placeholder: 'Seu Google Client Secret'
+      },
+      {
+        key: 'signature',
+        label: 'Assinatura de Email',
+        type: 'textarea',
+        required: false,
+        placeholder: 'Assinatura padrão dos emails'
+      }
+    ],
+    webhookEvents: ['email.sent', 'client.contacted', 'process.notification_sent']
+  },
+  // Other Services
   {
     type: 'notion',
     name: 'Notion',
