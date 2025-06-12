@@ -1,4 +1,16 @@
 
+export type IntegrationType = 
+  | 'google_calendar'
+  | 'google_drive'
+  | 'google_docs'
+  | 'google_sheets'
+  | 'notion'
+  | 'n8n'
+  | 'gmail'
+  | 'make'
+  | 'hubspot'
+  | 'zapier';
+
 export interface WebhookConfig {
   id: string;
   name: string;
@@ -22,34 +34,11 @@ export interface IntegrationConfig {
   lastSync?: string;
 }
 
-export type IntegrationType = 
-  | 'google_calendar'
-  | 'google_drive'
-  | 'google_docs'
-  | 'google_sheets'
-  | 'notion'
-  | 'n8n'
-  | 'make'
-  | 'hubspot'
-  | 'zapier'
-  | 'webhook'
-  | 'api';
-
 export interface WebhookPayload {
   event: string;
   timestamp: string;
   data: any;
   source: string;
-}
-
-export interface ApiEndpoint {
-  id: string;
-  path: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  description: string;
-  active: boolean;
-  requiresAuth: boolean;
-  rateLimit?: number;
 }
 
 export interface IntegrationTemplate {
@@ -58,7 +47,7 @@ export interface IntegrationTemplate {
   description: string;
   icon: string;
   fields: IntegrationField[];
-  webhookEvents?: string[];
+  webhookEvents: string[];
 }
 
 export interface IntegrationField {
@@ -66,6 +55,16 @@ export interface IntegrationField {
   label: string;
   type: 'text' | 'password' | 'url' | 'select' | 'boolean';
   required: boolean;
-  options?: { value: string; label: string; }[];
-  placeholder?: string;
+  placeholder: string;
+  options?: { label: string; value: string }[];
+}
+
+export interface ApiEndpoint {
+  id: string;
+  path: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  description: string;
+  active: boolean;
+  authentication: 'none' | 'api_key' | 'bearer';
+  createdAt: string;
 }
