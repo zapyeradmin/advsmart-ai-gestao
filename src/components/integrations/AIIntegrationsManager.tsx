@@ -21,12 +21,16 @@ import {
 import { useIntegrations } from '@/hooks/useIntegrations';
 import { integrationTemplates } from '@/config/integrationTemplates';
 import { useToast } from "@/hooks/use-toast";
+import IntegrationForm from './IntegrationForm';
 
 const AIIntegrationsManager = () => {
   const { integrations, createIntegration, updateIntegration, deleteIntegration } = useIntegrations();
   const { toast } = useToast();
   const [testPrompt, setTestPrompt] = useState('');
   const [testingIntegration, setTestingIntegration] = useState<string | null>(null);
+  const [showIntegrationForm, setShowIntegrationForm] = useState(false);
+  const [selectedIntegrationType, setSelectedIntegrationType] = useState<string>('');
+  const [editingIntegration, setEditingIntegration] = useState<string | null>(null);
 
   const aiIntegrations = integrations.filter(i => 
     ['openai', 'grok', 'deepseek', 'gemini', 'arcee', 'openrouter'].includes(i.type)
@@ -79,6 +83,28 @@ const AIIntegrationsManager = () => {
     }
   };
 
+  const handleConfigureIntegration = (templateType: string) => {
+    setSelectedIntegrationType(templateType);
+    setShowIntegrationForm(true);
+  };
+
+  const handleEditIntegration = (integrationId: string) => {
+    setEditingIntegration(integrationId);
+    setShowIntegrationForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowIntegrationForm(false);
+    setSelectedIntegrationType('');
+    setEditingIntegration(null);
+  };
+
+  const handleSaveForm = () => {
+    setShowIntegrationForm(false);
+    setSelectedIntegrationType('');
+    setEditingIntegration(null);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -127,13 +153,7 @@ const AIIntegrationsManager = () => {
                       <Button 
                         size="sm" 
                         className="w-full bg-primary hover:bg-primary-hover"
-                        onClick={() => {
-                          // Aqui seria aberto o modal de configuração
-                          toast({
-                            title: "Configuração",
-                            description: `Configure a integração com ${template.name}`
-                          });
-                        }}
+                        onClick={() => handleConfigureIntegration(template.type)}
                       >
                         <Plus size={14} className="mr-2" />
                         Configurar
@@ -182,6 +202,7 @@ const AIIntegrationsManager = () => {
                         <Button
                           size="sm"
                           variant="outline"
+                          onClick={() => handleEditIntegration(integration.id)}
                           className="border-gray-700 text-gray-300"
                         >
                           <Settings size={12} />
@@ -253,6 +274,15 @@ const AIIntegrationsManager = () => {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Modal de Formulário */}
+      {showIntegrationForm && (
+        <IntegrationForm
+          integrationId={editingIntegration || undefined}
+          onClose={handleCloseForm}
+          onSave={handleSaveForm}
+        />
       )}
     </div>
   );

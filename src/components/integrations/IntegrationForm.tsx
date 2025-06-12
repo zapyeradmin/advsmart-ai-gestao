@@ -34,8 +34,8 @@ const IntegrationForm = ({ integrationId, onClose, onSave }: IntegrationFormProp
       setFormData({
         name: integration.name,
         active: integration.active,
-        credentials: integration.credentials,
-        settings: integration.settings
+        credentials: integration.credentials || {},
+        settings: integration.settings || {}
       });
     }
   }, [integration]);
@@ -45,6 +45,17 @@ const IntegrationForm = ({ integrationId, onClose, onSave }: IntegrationFormProp
     
     if (!selectedType || !template) {
       alert('Selecione um tipo de integração');
+      return;
+    }
+
+    // Validar campos obrigatórios
+    const requiredFields = template.fields.filter(field => field.required);
+    const missingFields = requiredFields.filter(field => 
+      !formData.credentials[field.key] || formData.credentials[field.key].toString().trim() === ''
+    );
+
+    if (missingFields.length > 0) {
+      alert(`Preencha os campos obrigatórios: ${missingFields.map(f => f.label).join(', ')}`);
       return;
     }
 
