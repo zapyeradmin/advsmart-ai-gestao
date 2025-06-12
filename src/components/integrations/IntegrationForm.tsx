@@ -34,7 +34,7 @@ const IntegrationForm = ({ integrationId, onClose, onSave }: IntegrationFormProp
 
   useEffect(() => {
     if (integration) {
-      setSelectedType(integration.type);
+      setSelectedType(integration.type as IntegrationType);
       setFormData({
         name: integration.name,
         active: integration.active,
@@ -101,7 +101,7 @@ const IntegrationForm = ({ integrationId, onClose, onSave }: IntegrationFormProp
                         ? 'bg-primary/20 border-primary'
                         : 'bg-gray-800 border-gray-700 hover:border-gray-600'
                     }`}
-                    onClick={() => setSelectedType(template.type)}
+                    onClick={() => setSelectedType(template.type as IntegrationType)}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-center space-x-3">
