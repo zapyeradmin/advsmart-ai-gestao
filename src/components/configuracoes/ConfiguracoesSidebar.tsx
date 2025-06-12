@@ -1,11 +1,12 @@
 
 import React from 'react';
 import { Settings, User, Bell, Shield, CreditCard, Database, Palette, Globe } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
 interface Tab {
   id: string;
   label: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: LucideIcon;
 }
 
 interface ConfiguracoesSidebarProps {
