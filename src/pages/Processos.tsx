@@ -3,7 +3,10 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Plus } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useCrudOperations } from '@/hooks/useCrudOperations';
 import ProcessModal from '@/components/modals/ProcessModal';
+import ProcessViewModal from '@/components/modals/ProcessViewModal';
+import DeleteConfirmationDialog from '@/components/ui/delete-confirmation-dialog';
 import ProcessFilters from '@/components/process/ProcessFilters';
 import ProcessStats from '@/components/process/ProcessStats';
 import ProcessTable from '@/components/process/ProcessTable';
@@ -13,10 +16,22 @@ const Processos = () => {
   const [filterArea, setFilterArea] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterResponsavel, setFilterResponsavel] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { toast } = useToast();
 
-  const processos = [
+  const {
+    selectedItem,
+    isViewModalOpen,
+    isEditModalOpen,
+    isDeleteDialogOpen,
+    handleView,
+    handleEdit,
+    handleDelete,
+    confirmDelete,
+    closeModals,
+  } = useCrudOperations();
+
+  const [processos, setProcessos] = useState([
     {
       id: 1,
       numero: '0001234-12.2023.8.26.0100',
@@ -83,7 +98,7 @@ const Processos = () => {
       ultimoAndamento: '2023-12-01',
       observacoes: 'Processo finalizado com acordo'
     }
-  ];
+  ]);
 
   const filteredProcessos = processos.filter(processo => {
     const matchesSearch = processo.numero.includes(searchTerm) ||
@@ -98,11 +113,35 @@ const Processos = () => {
   });
 
   const handleSaveProcess = (processData: any) => {
-    console.log('Novo processo:', processData);
-    toast({
-      title: "Sucesso!",
-      description: "Processo cadastrado com sucesso.",
-    });
+    if (selectedItem) {
+      // Editando processo existente
+      setProcessos(prev => prev.map(p => 
+        p.id === selectedItem.id ? { ...p, ...processData } : p
+      ));
+      toast({
+        title: "Processo atualizado!",
+        description: "As informações do processo foram atualizadas com sucesso.",
+      });
+    } else {
+      // Adicionando novo processo
+      const newProcess = {
+        ...processData,
+        id: Date.now(),
+        andamentos: 0,
+        ultimoAndamento: new Date().toISOString(),
+      };
+      setProcessos(prev => [...prev, newProcess]);
+      toast({
+        title: "Processo cadastrado!",
+        description: "Novo processo foi adicionado com sucesso.",
+      });
+    }
+    setIsAddModalOpen(false);
+    closeModals();
+  };
+
+  const handleDeleteProcess = (id: string) => {
+    setProcessos(prev => prev.filter(p => p.id.toString() !== id));
   };
 
   const areas = [...new Set(processos.map(p => p.area))];
@@ -117,7 +156,7 @@ const Processos = () => {
         </div>
         <Button
           className="bg-primary hover:bg-primary-hover text-white"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => setIsAddModalOpen(true)}
         >
           <Plus size={16} className="mr-2" />
           Novo Processo
@@ -142,12 +181,36 @@ const Processos = () => {
       <ProcessTable
         filteredProcessos={filteredProcessos}
         processos={processos}
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+
+      {/* Modals */}
+      <ProcessModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSave={handleSaveProcess}
       />
 
       <ProcessModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isEditModalOpen}
+        onClose={closeModals}
         onSave={handleSaveProcess}
+      />
+
+      <ProcessViewModal
+        isOpen={isViewModalOpen}
+        onClose={closeModals}
+        process={selectedItem}
+      />
+
+      <DeleteConfirmationDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={closeModals}
+        onConfirm={() => confirmDelete(handleDeleteProcess, 'Processo')}
+        itemName="processo"
+        description="Tem certeza que deseja excluir este processo? Esta ação não pode ser desfeita e todos os dados relacionados serão perdidos."
       />
     </div>
   );

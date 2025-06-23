@@ -7,9 +7,18 @@ import ProcessTableRow from './ProcessTableRow';
 interface ProcessTableProps {
   filteredProcessos: any[];
   processos: any[];
+  onView: (processo: any) => void;
+  onEdit: (processo: any) => void;
+  onDelete: (processo: any) => void;
 }
 
-const ProcessTable = ({ filteredProcessos, processos }: ProcessTableProps) => {
+const ProcessTable = ({ 
+  filteredProcessos, 
+  processos, 
+  onView, 
+  onEdit, 
+  onDelete 
+}: ProcessTableProps) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'Em Andamento': return <Clock size={12} className="text-blue-400" />;
@@ -53,6 +62,9 @@ const ProcessTable = ({ filteredProcessos, processos }: ProcessTableProps) => {
                   processo={processo}
                   getStatusIcon={getStatusIcon}
                   getPriorityColor={getPriorityColor}
+                  onView={onView}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
                 />
               ))}
             </tbody>

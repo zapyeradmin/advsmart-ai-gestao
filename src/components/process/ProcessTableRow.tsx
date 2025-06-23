@@ -7,9 +7,19 @@ interface ProcessTableRowProps {
   processo: any;
   getStatusIcon: (status: string) => JSX.Element;
   getPriorityColor: (urgencia: string) => string;
+  onView: (processo: any) => void;
+  onEdit: (processo: any) => void;
+  onDelete: (processo: any) => void;
 }
 
-const ProcessTableRow = ({ processo, getStatusIcon, getPriorityColor }: ProcessTableRowProps) => {
+const ProcessTableRow = ({ 
+  processo, 
+  getStatusIcon, 
+  getPriorityColor, 
+  onView, 
+  onEdit, 
+  onDelete 
+}: ProcessTableRowProps) => {
   return (
     <tr className="border-t border-gray-700 hover:bg-gray-800/50">
       <td className="p-4">
@@ -94,16 +104,31 @@ const ProcessTableRow = ({ processo, getStatusIcon, getPriorityColor }: ProcessT
       </td>
       <td className="p-4">
         <div className="flex items-center justify-center space-x-1">
-          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-gray-400 hover:text-white"
+            onClick={() => onView(processo)}
+          >
             <Eye size={14} />
           </Button>
-          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-gray-400 hover:text-white"
+            onClick={() => onEdit(processo)}
+          >
             <Edit size={14} />
           </Button>
           <Button variant="ghost" size="sm" className="text-gray-400 hover:text-blue-400">
             <ExternalLink size={14} />
           </Button>
-          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-400">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-gray-400 hover:text-red-400"
+            onClick={() => onDelete(processo)}
+          >
             <Trash2 size={14} />
           </Button>
         </div>
