@@ -104,7 +104,6 @@ const AIIntegrationsManager = () => {
       {showIntegrationForm && (
         <IntegrationForm
           integrationId={editingIntegration || undefined}
-          integrationType={selectedIntegrationType || undefined}
           onClose={handleCloseForm}
           onSave={handleSaveForm}
         />
