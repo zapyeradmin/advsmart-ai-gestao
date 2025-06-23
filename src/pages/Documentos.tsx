@@ -4,12 +4,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search, Filter, File, FileText, Download, Eye, Edit, Trash2, Upload } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useCrudOperations } from "@/hooks/useCrudOperations";
+import DocumentModal from "@/components/modals/DocumentModal";
+import DocumentViewModal from "@/components/modals/DocumentViewModal";
+import DeleteConfirmationDialog from "@/components/ui/delete-confirmation-dialog";
+import { Document, DocumentFormData } from '@/types/document';
 
 const Documentos = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
+  const {
+    selectedItem,
+    isViewModalOpen,
+    isEditModalOpen,
+    isDeleteDialogOpen,
+    handleView,
+    handleEdit,
+    handleDelete,
+    confirmDelete,
+    closeModals,
+    setIsEditModalOpen
+  } = useCrudOperations();
 
-  const documentos = [
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const [documentos, setDocumentos] = useState<Document[]>([
     {
       id: 1,
       nome: 'Petição Inicial - Maria Silva',
@@ -58,7 +77,7 @@ const Documentos = () => {
       autor: 'Dra. Camila Santos',
       status: 'Rascunho'
     }
-  ];
+  ]);
 
   const filteredDocumentos = documentos.filter(doc =>
     doc.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -68,16 +87,55 @@ const Documentos = () => {
   );
 
   const handleNovoDocumento = () => {
-    toast({
-      title: "Em desenvolvimento",
-      description: "Funcionalidade será implementada em breve.",
-    });
+    setIsCreateModalOpen(true);
   };
 
   const handleUpload = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleSaveDocument = (documentData: DocumentFormData) => {
+    if (selectedItem) {
+      // Editing existing document
+      setDocumentos(prev => prev.map(doc => 
+        doc.id === selectedItem.id 
+          ? { 
+              ...doc, 
+              ...documentData,
+              tamanho: documentData.arquivo ? `${(documentData.arquivo.size / 1024 / 1024).toFixed(1)} MB` : doc.tamanho,
+              dataUpload: documentData.arquivo ? new Date().toISOString().split('T')[0] : doc.dataUpload
+            }
+          : doc
+      ));
+      toast({
+        title: "Documento atualizado",
+        description: "O documento foi atualizado com sucesso.",
+      });
+    } else {
+      // Creating new document
+      const newDocument: Document = {
+        id: Date.now(),
+        ...documentData,
+        tamanho: documentData.arquivo ? `${(documentData.arquivo.size / 1024 / 1024).toFixed(1)} MB` : '0 MB',
+        dataUpload: new Date().toISOString().split('T')[0]
+      };
+      setDocumentos(prev => [...prev, newDocument]);
+      toast({
+        title: "Documento criado",
+        description: "Novo documento foi criado com sucesso.",
+      });
+    }
+  };
+
+  const handleDeleteDocument = (id: number) => {
+    setDocumentos(prev => prev.filter(doc => doc.id !== id));
+  };
+
+  const handleDownloadDocument = (documento: Document) => {
+    // In a real app, this would trigger the actual download
     toast({
-      title: "Em desenvolvimento",
-      description: "Funcionalidade de upload será implementada em breve.",
+      title: "Download iniciado",
+      description: `Fazendo download de: ${documento.nome}`,
     });
   };
 
@@ -231,16 +289,36 @@ const Documentos = () => {
                   </td>
                   <td className="p-4">
                     <div className="flex items-center justify-center space-x-2">
-                      <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-gray-400 hover:text-white"
+                        onClick={() => handleView(documento)}
+                      >
                         <Eye size={14} />
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-gray-400 hover:text-white"
+                        onClick={() => handleDownloadDocument(documento)}
+                      >
                         <Download size={14} />
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-gray-400 hover:text-white"
+                        onClick={() => handleEdit(documento)}
+                      >
                         <Edit size={14} />
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-400">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-gray-400 hover:text-red-400"
+                        onClick={() => handleDelete(documento)}
+                      >
                         <Trash2 size={14} />
                       </Button>
                     </div>
@@ -257,6 +335,41 @@ const Documentos = () => {
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      <DocumentModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSave={handleSaveDocument}
+        title="Novo Documento"
+      />
+
+      <DocumentModal
+        isOpen={isEditModalOpen}
+        onClose={closeModals}
+        onSave={handleSaveDocument}
+        document={selectedItem}
+        title="Editar Documento"
+      />
+
+      <DocumentViewModal
+        isOpen={isViewModalOpen}
+        onClose={closeModals}
+        onEdit={() => {
+          closeModals();
+          setIsEditModalOpen(true);
+        }}
+        onDownload={() => handleDownloadDocument(selectedItem)}
+        document={selectedItem}
+      />
+
+      <DeleteConfirmationDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={closeModals}
+        onConfirm={() => confirmDelete(handleDeleteDocument, 'documento')}
+        title="Confirmar Exclusão"
+        itemName="documento"
+      />
     </div>
   );
 };

@@ -2,14 +2,33 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Calendar, Clock, Users, MapPin, Video } from 'lucide-react';
+import { Plus, Search, Calendar, Clock, Users, MapPin, Video, Eye, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useCrudOperations } from "@/hooks/useCrudOperations";
+import EventModal from "@/components/modals/EventModal";
+import EventViewModal from "@/components/modals/EventViewModal";
+import DeleteConfirmationDialog from "@/components/ui/delete-confirmation-dialog";
+import { Event, EventFormData } from '@/types/event';
 
 const Agenda = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
+  const {
+    selectedItem,
+    isViewModalOpen,
+    isEditModalOpen,
+    isDeleteDialogOpen,
+    handleView,
+    handleEdit,
+    handleDelete,
+    confirmDelete,
+    closeModals,
+    setIsEditModalOpen
+  } = useCrudOperations();
 
-  const eventos = [
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const [eventos, setEventos] = useState<Event[]>([
     {
       id: 1,
       titulo: 'Audiência de Instrução',
@@ -46,7 +65,7 @@ const Agenda = () => {
       status: 'Confirmado',
       participantes: ['Dr. Ricardo Oliveira', 'João Carlos Mendes', 'Mediador']
     }
-  ];
+  ]);
 
   const filteredEventos = eventos.filter(evento =>
     evento.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -55,9 +74,45 @@ const Agenda = () => {
   );
 
   const handleNovoEvento = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleSaveEvent = (eventData: EventFormData) => {
+    if (selectedItem) {
+      // Editing existing event
+      setEventos(prev => prev.map(evento => 
+        evento.id === selectedItem.id 
+          ? { ...evento, ...eventData }
+          : evento
+      ));
+      toast({
+        title: "Evento atualizado",
+        description: "O evento foi atualizado com sucesso.",
+      });
+    } else {
+      // Creating new event
+      const newEvent: Event = {
+        id: Date.now(),
+        ...eventData,
+        participantes: eventData.participantes || []
+      };
+      setEventos(prev => [...prev, newEvent]);
+      toast({
+        title: "Evento criado",
+        description: "Novo evento foi criado com sucesso.",
+      });
+    }
+  };
+
+  const handleDeleteEvent = (id: number) => {
+    setEventos(prev => prev.filter(evento => evento.id !== id));
+  };
+
+  const handleOpenEvent = (evento: Event) => {
+    // In a real app, this would navigate to a dedicated event page
     toast({
-      title: "Em desenvolvimento",
-      description: "Funcionalidade será implementada em breve.",
+      title: "Abrindo evento",
+      description: `Navegando para página dedicada do evento: ${evento.titulo}`,
     });
   };
 
@@ -204,11 +259,40 @@ const Agenda = () => {
                 </span>
                 
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="border-gray-700 text-gray-300">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-gray-700 text-gray-300"
+                    onClick={() => handleView(evento)}
+                  >
+                    <Eye size={14} className="mr-1" />
+                    Visualizar
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-gray-700 text-gray-300"
+                    onClick={() => handleEdit(evento)}
+                  >
+                    <Edit size={14} className="mr-1" />
                     Editar
                   </Button>
-                  <Button variant="outline" size="sm" className="border-gray-700 text-gray-300">
-                    Detalhes
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-gray-700 text-gray-300"
+                    onClick={() => handleOpenEvent(evento)}
+                  >
+                    <ExternalLink size={14} className="mr-1" />
+                    Abrir
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-gray-700 text-red-400 hover:text-red-300"
+                    onClick={() => handleDelete(evento)}
+                  >
+                    <Trash2 size={14} />
                   </Button>
                 </div>
               </div>
@@ -222,6 +306,40 @@ const Agenda = () => {
           <p className="text-gray-400">Nenhum evento encontrado</p>
         </div>
       )}
+
+      {/* Modals */}
+      <EventModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSave={handleSaveEvent}
+        title="Novo Evento"
+      />
+
+      <EventModal
+        isOpen={isEditModalOpen}
+        onClose={closeModals}
+        onSave={handleSaveEvent}
+        event={selectedItem}
+        title="Editar Evento"
+      />
+
+      <EventViewModal
+        isOpen={isViewModalOpen}
+        onClose={closeModals}
+        onEdit={() => {
+          closeModals();
+          setIsEditModalOpen(true);
+        }}
+        event={selectedItem}
+      />
+
+      <DeleteConfirmationDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={closeModals}
+        onConfirm={() => confirmDelete(handleDeleteEvent, 'evento')}
+        title="Confirmar Exclusão"
+        itemName="evento"
+      />
     </div>
   );
 };
