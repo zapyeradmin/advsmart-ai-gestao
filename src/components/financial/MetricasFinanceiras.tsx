@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell, LineChart, Line, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell, LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, Target, Users, Calendar } from 'lucide-react';
 import { MetricasFinanceiras as MetricasType, Transacao, Parceiro, CustoFixo } from '@/types/financial';
 
@@ -257,7 +257,15 @@ const MetricasFinanceiras: React.FC<MetricasFinanceirasProps> = ({
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#111827', 
+                      border: '1px solid #374151', 
+                      borderRadius: '8px',
+                      color: '#e0e0e0'
+                    }}
+                    formatter={(value) => [`R$ ${Number(value).toLocaleString('pt-BR')}`, '']}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -287,7 +295,15 @@ const MetricasFinanceiras: React.FC<MetricasFinanceirasProps> = ({
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#111827', 
+                      border: '1px solid #374151', 
+                      borderRadius: '8px',
+                      color: '#e0e0e0'
+                    }}
+                    formatter={(value) => [`R$ ${Number(value).toLocaleString('pt-BR')}`, '']}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
