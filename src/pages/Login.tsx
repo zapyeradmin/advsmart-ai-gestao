@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,15 +82,15 @@ const Login = () => {
 
             <CardHeader className="text-center relative z-10 space-y-4">
               {/* Logo */}
-              <div className="mx-auto w-12 h-12 flex items-center justify-center rounded-full bg-primary/20 border border-primary/30 relative overflow-hidden group-hover:scale-110 transition-transform duration-500">
-                <Bot size={24} className="text-primary" />
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent" />
+              <div className="mx-auto w-32 h-12 flex items-center justify-center rounded-full relative overflow-hidden group-hover:scale-110 transition-transform duration-500">
+                <img 
+                  src="/logo.png" 
+                  alt="Sistema para Escritórios Inteligentes" 
+                  className="w-full h-full object-contain filter brightness-110"
+                />
               </div>
 
               <div className="space-y-2">
-                <CardTitle className="text-2xl font-bold bg-gradient-to-br from-white to-white/80 bg-clip-text text-transparent">
-                  AdvSmart AI
-                </CardTitle>
                 <CardDescription className="text-gray-400">
                   Faça login para acessar sua conta
                 </CardDescription>
