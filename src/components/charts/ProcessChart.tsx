@@ -1,16 +1,34 @@
 
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-
-const data = [
-  { name: 'Trabalhista', value: 35, color: '#4a9eff' },
-  { name: 'Cível', value: 25, color: '#8dd3c7' },
-  { name: 'Tributário', value: 15, color: '#fbbf72' },
-  { name: 'Empresarial', value: 14, color: '#fc8d62' },
-  { name: 'Outros', value: 11, color: '#b3b3b3' },
-];
+import { useIntegratedData } from '@/hooks/useIntegratedData';
 
 const ProcessChart = () => {
+  const { metricas } = useIntegratedData();
+
+  // Cores para as áreas
+  const colors = ['#4a9eff', '#8dd3c7', '#fbbf72', '#fc8d62', '#b3b3b3'];
+
+  // Processar dados das áreas jurídicas
+  const processChartData = () => {
+    const areasData = Object.entries(metricas.processos.porArea).map(([area, quantidade], index) => ({
+      name: area,
+      value: quantidade,
+      color: colors[index % colors.length]
+    }));
+
+    // Se não houver dados, mostrar dados de exemplo
+    if (areasData.length === 0) {
+      return [
+        { name: 'Nenhum processo', value: 1, color: '#b3b3b3' }
+      ];
+    }
+
+    return areas.Data;
+  };
+
+  const data = processChartData();
+
   return (
     <div className="bg-dark-card rounded-lg p-5 border border-gray-800 shadow-lg">
       <div className="flex justify-between items-center mb-6">

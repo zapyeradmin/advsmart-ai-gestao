@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import StatsCard from '@/components/dashboard/StatsCard';
 import AdminWidgets from '@/components/dashboard/AdminWidgets';
 import TasksWidget from '@/components/dashboard/TasksWidget';
@@ -13,6 +13,7 @@ import ProcessChart from '@/components/charts/ProcessChart';
 import { Users, FileText, DollarSign, Calendar } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
+import { useIntegratedData } from '@/hooks/useIntegratedData';
 import PermissionGuard from '@/components/auth/PermissionGuard';
 
 const Dashboard = () => {
@@ -20,6 +21,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const { toast } = useToast();
   const { user } = useAuth();
+  const { metricas, processos, transacoes, clientes } = useIntegratedData();
 
   const handleSaveClient = (clientData: any) => {
     toast({
@@ -28,111 +30,165 @@ const Dashboard = () => {
     });
   };
 
+  // Calcular dados dinâmicos baseados nos dados reais
+  const dynamicData = useMemo(() => {
+    const hoje = new Date();
+    const mesAtual = hoje.getMonth();
+    const anoAtual = hoje.getFullYear();
+
+    // Processos com prazos críticos (próximos 7 dias)
+    const prazosVencendo = processos.filter(p => {
+      if (!p.proximoPrazo) return false;
+      const prazoDate = new Date(p.proximoPrazo);
+      const diffTime = prazoDate.getTime() - hoje.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays >= 0 && diffDays <= 7;
+    });
+
+    // Atividades recentes baseadas em dados reais
+    const atividadesRecentes = [
+      ...processos.slice(0, 2).map(processo => ({
+        id: parseInt(processo.id),
+        type: 'Novo processo cadastrado',
+        description: processo.numero,
+        client: clientes.find(c => c.id === processo.clienteId)?.nome || 'Cliente não encontrado',
+        responsible: processo.responsavel,
+        time: 'Hoje, ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        icon: 'file' as const,
+        color: 'bg-blue-900/30 text-primary'
+      })),
+      ...transacoes.filter(t => t.status === 'Pago').slice(0, 1).map(transacao => ({
+        id: parseInt(transacao.id),
+        type: 'Pagamento recebido',
+        description: `R$ ${transacao.valor.toLocaleString('pt-BR')}`,
+        client: clientes.find(c => c.id === transacao.clienteId)?.nome || 'Cliente não encontrado',
+        responsible: `${transacao.categoria} - ${transacao.descricao}`,
+        time: new Date(transacao.data).toLocaleDateString('pt-BR') + ', ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        icon: 'dollar' as const,
+        color: 'bg-green-900/30 text-green-400'
+      }))
+    ];
+
+    // Tarefas baseadas em processos com prazos
+    const tarefas = processos
+      .filter(p => p.proximoPrazo)
+      .slice(0, 3)
+      .map(processo => {
+        const prazoDate = new Date(processo.proximoPrazo!);
+        const diffTime = prazoDate.getTime() - hoje.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        let priority = 'Baixa';
+        let priorityColor = 'bg-blue-900/50 text-blue-400';
+        
+        if (diffDays <= 1) {
+          priority = 'Urgente';
+          priorityColor = 'bg-red-900/50 text-red-400';
+        } else if (diffDays <= 3) {
+          priority = 'Média';
+          priorityColor = 'bg-yellow-900/50 text-yellow-400';
+        }
+
+        return {
+          id: parseInt(processo.id),
+          title: `${processo.assunto} - Processo nº ${processo.numero}`,
+          date: diffDays === 0 ? 'Hoje' : diffDays === 1 ? 'Amanhã' : prazoDate.toLocaleDateString('pt-BR'),
+          priority,
+          priorityColor
+        };
+      });
+
+    // Próximos prazos
+    const proximosPrazos = processos
+      .filter(p => p.proximoPrazo)
+      .sort((a, b) => new Date(a.proximoPrazo!).getTime() - new Date(b.proximoPrazo!).getTime())
+      .slice(0, 3)
+      .map(processo => {
+        const prazoDate = new Date(processo.proximoPrazo!);
+        const diffTime = prazoDate.getTime() - hoje.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        let status: 'critical' | 'warning' | 'normal' = 'normal';
+        let dateText = prazoDate.toLocaleDateString('pt-BR');
+        
+        if (diffDays === 0) {
+          status = 'critical';
+          dateText = 'Hoje';
+        } else if (diffDays === 1) {
+          status = 'warning';
+          dateText = 'Amanhã';
+        } else if (diffDays <= 3) {
+          status = 'warning';
+        }
+
+        return {
+          id: parseInt(processo.id),
+          type: 'Prazo Processual',
+          process: `Processo nº ${processo.numero}`,
+          client: clientes.find(c => c.id === processo.clienteId)?.nome || 'Cliente não encontrado',
+          date: dateText,
+          time: '23:59',
+          status
+        };
+      });
+
+    return {
+      prazosVencendo: prazosVencendo.length,
+      prazosHoje: prazosVencendo.filter(p => {
+        const prazoDate = new Date(p.proximoPrazo!);
+        return prazoDate.toDateString() === hoje.toDateString();
+      }).length,
+      atividadesRecentes,
+      tarefas,
+      proximosPrazos
+    };
+  }, [processos, transacoes, clientes]);
+
+  // Stats baseados em dados reais
   const stats = [
     {
       title: 'Total de Clientes',
-      value: '147',
+      value: metricas.clientes.total.toString(),
       icon: Users,
-      change: { value: '+12%', type: 'increase' as const, label: 'vs. mês anterior' },
+      change: { 
+        value: `+${metricas.clientes.novosNoMes}`, 
+        type: 'increase' as const, 
+        label: 'novos este mês' 
+      },
       iconColor: 'bg-blue-900/30 text-primary'
     },
     {
       title: 'Processos Ativos',
-      value: '89',
+      value: metricas.processos.emAndamento.toString(),
       icon: FileText,
-      change: { value: '+3%', type: 'neutral' as const, label: 'vs. mês anterior' },
+      change: { 
+        value: `${metricas.processos.taxaSucesso.toFixed(1)}%`, 
+        type: 'neutral' as const, 
+        label: 'taxa de sucesso' 
+      },
       iconColor: 'bg-purple-900/30 text-purple-400'
     },
     {
       title: 'Receitas do Mês',
-      value: 'R$ 78.450',
+      value: `R$ ${metricas.financeiro.receitaTotal.toLocaleString('pt-BR')}`,
       icon: DollarSign,
-      change: { value: '+18%', type: 'increase' as const, label: 'vs. mês anterior' },
+      change: { 
+        value: `${metricas.financeiro.margemLucratividade.toFixed(1)}%`, 
+        type: 'increase' as const, 
+        label: 'margem de lucro' 
+      },
       iconColor: 'bg-green-900/30 text-green-400'
     },
     {
       title: 'Prazos Pendentes',
-      value: '12',
+      value: dynamicData.prazosVencendo.toString(),
       icon: Calendar,
-      change: { value: '5', type: 'decrease' as const, label: 'prazos críticos' },
+      change: { 
+        value: dynamicData.prazosHoje.toString(), 
+        type: dynamicData.prazosHoje > 0 ? 'decrease' as const : 'neutral' as const, 
+        label: 'prazos hoje' 
+      },
       iconColor: 'bg-red-900/30 text-red-400'
-    }
-  ];
-
-  const tasks = [
-    {
-      id: 1,
-      title: 'Preparar contestação - Processo nº 0001234-12.2023',
-      date: 'Hoje, 14:00',
-      priority: 'Urgente',
-      priorityColor: 'bg-red-900/50 text-red-400'
-    },
-    {
-      id: 2,
-      title: 'Revisar contrato Empresa XYZ Ltda.',
-      date: 'Amanhã, 10:00',
-      priority: 'Média',
-      priorityColor: 'bg-yellow-900/50 text-yellow-400'
-    },
-    {
-      id: 3,
-      title: 'Agendar reunião com cliente João Silva',
-      date: '10/06/2025, 15:30',
-      priority: 'Baixa',
-      priorityColor: 'bg-blue-900/50 text-blue-400'
-    }
-  ];
-
-  const upcomingDeadlines = [
-    {
-      id: 1,
-      type: 'Audiência de Instrução e Julgamento',
-      process: 'Processo nº 0001234-12.2023.8.26.0100',
-      client: 'Maria Fernandes',
-      date: 'Hoje',
-      time: '14:30',
-      status: 'critical' as const
-    },
-    {
-      id: 2,
-      type: 'Prazo para Recurso',
-      process: 'Processo nº 0005678-45.2023.8.26.0100',
-      client: 'Empresa ABC Ltda.',
-      date: 'Amanhã',
-      time: '23:59',
-      status: 'warning' as const
-    },
-    {
-      id: 3,
-      type: 'Reunião com Cliente',
-      process: 'Consultoria Empresarial',
-      client: 'Startup XYZ',
-      date: '12/06/2025',
-      time: '10:00',
-      status: 'normal' as const
-    }
-  ];
-
-  const recentActivities = [
-    {
-      id: 1,
-      type: 'Novo processo cadastrado',
-      description: '0009876-54.2023.8.26.0100',
-      client: 'Empresa DEF Ltda.',
-      responsible: 'Dr. Ricardo Oliveira',
-      time: 'Hoje, 11:23',
-      icon: 'file' as const,
-      color: 'bg-blue-900/30 text-primary'
-    },
-    {
-      id: 2,
-      type: 'Pagamento recebido',
-      description: 'R$ 2.500,00',
-      client: 'João Carlos Mendes',
-      responsible: 'Fatura #INV-2023-056',
-      time: 'Hoje, 09:45',
-      icon: 'dollar' as const,
-      color: 'bg-green-900/30 text-green-400'
     }
   ];
 
@@ -197,12 +253,12 @@ const Dashboard = () => {
 
           {/* Tasks and Deadlines */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <TasksWidget tasks={tasks} />
-            <DeadlinesWidget deadlines={upcomingDeadlines} />
+            <TasksWidget tasks={dynamicData.tarefas} />
+            <DeadlinesWidget deadlines={dynamicData.proximosPrazos} />
           </div>
 
           {/* Recent Activity */}
-          <RecentActivityWidget activities={recentActivities} />
+          <RecentActivityWidget activities={dynamicData.atividadesRecentes} />
         </>
       )}
 

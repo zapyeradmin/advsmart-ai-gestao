@@ -1,17 +1,51 @@
 
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
-
-const data = [
-  { name: 'Jan', receitas: 45000, despesas: 30000 },
-  { name: 'Fev', receitas: 52000, despesas: 35000 },
-  { name: 'Mar', receitas: 48000, despesas: 32000 },
-  { name: 'Abr', receitas: 61000, despesas: 38000 },
-  { name: 'Mai', receitas: 67000, despesas: 42000 },
-  { name: 'Jun', receitas: 78000, despesas: 45000 },
-];
+import { useIntegratedData } from '@/hooks/useIntegratedData';
 
 const RevenueChart = () => {
+  const { transacoes } = useIntegratedData();
+
+  // Processar dados de transações para o gráfico
+  const processChartData = () => {
+    const monthlyData: { [key: string]: { receitas: number, despesas: number } } = {};
+    
+    // Inicializar últimos 6 meses
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+    const currentDate = new Date();
+    
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const monthKey = months[date.getMonth()];
+      monthlyData[monthKey] = { receitas: 0, despesas: 0 };
+    }
+
+    // Agrupar transações por mês
+    transacoes.forEach(transacao => {
+      if (transacao.status === 'Pago') {
+        const transacaoDate = new Date(transacao.data);
+        const monthKey = months[transacaoDate.getMonth()];
+        
+        if (monthlyData[monthKey]) {
+          if (transacao.tipo === 'Receita') {
+            monthlyData[monthKey].receitas += transacao.valor;
+          } else if (transacao.tipo === 'Despesa') {
+            monthlyData[monthKey].despesas += transacao.valor;
+          }
+        }
+      }
+    });
+
+    // Converter para array para o gráfico
+    return Object.entries(monthlyData).map(([name, data]) => ({
+      name,
+      receitas: data.receitas,
+      despesas: data.despesas
+    }));
+  };
+
+  const data = processChartData();
+
   return (
     <div className="bg-dark-card rounded-lg p-5 border border-gray-800 shadow-lg">
       <div className="flex justify-between items-center mb-6">
