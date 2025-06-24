@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,6 +101,7 @@ const Documentos = () => {
           ? { 
               ...doc, 
               ...documentData,
+              processo: documentData.processo || null,
               tamanho: documentData.arquivo ? `${(documentData.arquivo.size / 1024 / 1024).toFixed(1)} MB` : doc.tamanho,
               dataUpload: documentData.arquivo ? new Date().toISOString().split('T')[0] : doc.dataUpload
             }
@@ -116,6 +116,7 @@ const Documentos = () => {
       const newDocument: Document = {
         id: Date.now(),
         ...documentData,
+        processo: documentData.processo || null,
         tamanho: documentData.arquivo ? `${(documentData.arquivo.size / 1024 / 1024).toFixed(1)} MB` : '0 MB',
         dataUpload: new Date().toISOString().split('T')[0]
       };

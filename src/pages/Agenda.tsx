@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -82,7 +81,11 @@ const Agenda = () => {
       // Editing existing event
       setEventos(prev => prev.map(evento => 
         evento.id === selectedItem.id 
-          ? { ...evento, ...eventData }
+          ? { 
+              ...evento, 
+              ...eventData,
+              processo: eventData.processo || null
+            }
           : evento
       ));
       toast({
@@ -94,6 +97,7 @@ const Agenda = () => {
       const newEvent: Event = {
         id: Date.now(),
         ...eventData,
+        processo: eventData.processo || null,
         participantes: eventData.participantes || []
       };
       setEventos(prev => [...prev, newEvent]);
