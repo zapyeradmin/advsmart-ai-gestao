@@ -366,7 +366,7 @@ const Documentos = () => {
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
         onClose={closeModals}
-        onConfirm={() => confirmDelete(handleDeleteDocument, 'documento')}
+        onConfirm={() => confirmDelete((id: string) => handleDeleteDocument(Number(id)), 'documento')}
         title="Confirmar Exclusão"
         itemName="documento"
       />

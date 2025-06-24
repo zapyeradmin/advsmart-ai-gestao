@@ -336,7 +336,7 @@ const Agenda = () => {
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
         onClose={closeModals}
-        onConfirm={() => confirmDelete(handleDeleteEvent, 'evento')}
+        onConfirm={() => confirmDelete((id: string) => handleDeleteEvent(Number(id)), 'evento')}
         title="Confirmar Exclusão"
         itemName="evento"
       />
