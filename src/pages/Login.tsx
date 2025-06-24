@@ -46,41 +46,34 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-dark-bg relative overflow-hidden flex items-center justify-center">
+    <div className="min-h-screen w-screen bg-black relative overflow-hidden flex items-center justify-center">
       {/* Background gradient effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-dark-bg to-black" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-black to-black" />
       
       {/* Animated background elements */}
-      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[120vh] h-[60vh] rounded-b-full bg-primary/10 blur-[80px] animate-pulse" />
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[100vh] h-[80vh] rounded-t-full bg-primary/15 blur-[60px] opacity-60" 
-           style={{ animation: 'float 8s ease-in-out infinite' }} />
+      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[120vh] h-[60vh] rounded-b-full bg-primary/15 blur-[80px] animate-pulse" />
+      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[100vh] h-[80vh] rounded-t-full bg-primary/20 blur-[60px] opacity-60 floating" />
       
       {/* Floating light spots */}
-      <div className="absolute left-1/4 top-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px] animate-pulse opacity-40" />
-      <div className="absolute right-1/4 bottom-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px] opacity-40" 
-           style={{ animation: 'float 6s ease-in-out infinite reverse' }} />
+      <div className="absolute left-1/4 top-1/4 w-96 h-96 bg-primary/8 rounded-full blur-[100px] animate-pulse opacity-40" />
+      <div className="absolute right-1/4 bottom-1/4 w-96 h-96 bg-primary/8 rounded-full blur-[100px] opacity-40 floating-reverse" />
 
       {/* Main login card */}
-      <div className="w-full max-w-md relative z-10 transform transition-all duration-700 hover:scale-105"
-           style={{ perspective: '1000px' }}>
+      <div className="w-full max-w-md relative z-10 transform transition-all duration-700 hover:scale-105 card-3d">
         <div className="relative group">
           {/* Card glow effect */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-700 card-glow" />
           
           {/* Traveling light borders */}
           <div className="absolute -inset-0.5 rounded-2xl overflow-hidden">
-            <div className="absolute top-0 left-0 h-0.5 w-1/2 bg-gradient-to-r from-transparent via-primary/60 to-transparent animate-pulse"
-                 style={{ animation: 'travel-horizontal 3s ease-in-out infinite' }} />
-            <div className="absolute top-0 right-0 w-0.5 h-1/2 bg-gradient-to-b from-transparent via-primary/60 to-transparent"
-                 style={{ animation: 'travel-vertical 3s ease-in-out infinite 0.75s' }} />
-            <div className="absolute bottom-0 right-0 h-0.5 w-1/2 bg-gradient-to-l from-transparent via-primary/60 to-transparent"
-                 style={{ animation: 'travel-horizontal 3s ease-in-out infinite 1.5s' }} />
-            <div className="absolute bottom-0 left-0 w-0.5 h-1/2 bg-gradient-to-t from-transparent via-primary/60 to-transparent"
-                 style={{ animation: 'travel-vertical 3s ease-in-out infinite 2.25s' }} />
+            <div className="absolute top-0 left-0 h-0.5 w-1/2 bg-gradient-to-r from-transparent via-primary/60 to-transparent travel-horizontal" />
+            <div className="absolute top-0 right-0 w-0.5 h-1/2 bg-gradient-to-b from-transparent via-primary/60 to-transparent travel-vertical" />
+            <div className="absolute bottom-0 right-0 h-0.5 w-1/2 bg-gradient-to-l from-transparent via-primary/60 to-transparent travel-horizontal-reverse" />
+            <div className="absolute bottom-0 left-0 w-0.5 h-1/2 bg-gradient-to-t from-transparent via-primary/60 to-transparent travel-vertical-reverse" />
           </div>
 
           {/* Glass card */}
-          <Card className="relative bg-dark-card/80 backdrop-blur-xl border border-primary/20 shadow-2xl overflow-hidden">
+          <Card className="relative bg-black/40 backdrop-blur-xl border border-primary/20 shadow-2xl overflow-hidden">
             {/* Inner pattern overlay */}
             <div className="absolute inset-0 opacity-5" 
                  style={{
@@ -186,9 +179,8 @@ const Login = () => {
                 {/* Login button */}
                 <Button 
                   type="submit" 
-                  className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-3 rounded-lg relative overflow-hidden group transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                  className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-3 rounded-lg relative overflow-hidden group transition-all duration-300 hover:scale-105 hover:shadow-lg button-glow"
                   disabled={isLoading}
-                  style={{ animation: isLoading ? 'pulse 2s infinite' : 'none' }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                   {isLoading ? (
@@ -203,7 +195,7 @@ const Login = () => {
               </form>
               
               {/* Test users info */}
-              <div className="mt-8 p-4 bg-dark-surface/50 rounded-lg border border-primary/10 backdrop-blur-sm">
+              <div className="mt-8 p-4 bg-black/30 rounded-lg border border-primary/10 backdrop-blur-sm">
                 <p className="text-gray-400 text-sm mb-2 font-medium">Usuários de teste:</p>
                 <div className="text-xs text-gray-500 space-y-1">
                   <div className="flex justify-between">
@@ -228,8 +220,8 @@ const Login = () => {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes float {
+      <style>{`
+        @keyframes floating {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
           50% { transform: translateY(-20px) rotate(5deg); }
         }
@@ -244,6 +236,47 @@ const Login = () => {
           0% { top: -50%; opacity: 0; }
           50% { opacity: 1; }
           100% { top: 100%; opacity: 0; }
+        }
+
+        .floating {
+          animation: floating 8s ease-in-out infinite;
+        }
+        
+        .floating-reverse {
+          animation: floating 6s ease-in-out infinite reverse;
+        }
+        
+        .travel-horizontal {
+          animation: travel-horizontal 3s ease-in-out infinite;
+        }
+        
+        .travel-vertical {
+          animation: travel-vertical 3s ease-in-out infinite 0.75s;
+        }
+        
+        .travel-horizontal-reverse {
+          animation: travel-horizontal 3s ease-in-out infinite 1.5s;
+        }
+        
+        .travel-vertical-reverse {
+          animation: travel-vertical 3s ease-in-out infinite 2.25s;
+        }
+        
+        .card-3d:hover {
+          transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.05);
+        }
+        
+        .card-glow {
+          animation: card-glow 4s ease-in-out infinite;
+        }
+        
+        @keyframes card-glow {
+          0%, 100% { opacity: 0; }
+          50% { opacity: 0.3; }
+        }
+        
+        .button-glow:hover {
+          box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
         }
       `}</style>
     </div>
