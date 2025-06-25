@@ -84,8 +84,8 @@ const Login = () => {
               {/* Logo */}
               <div className="mx-auto w-32 h-12 flex items-center justify-center rounded-full relative overflow-hidden group-hover:scale-110 transition-transform duration-500">
                 <img 
-                  src="/logo.png" 
-                  alt="Sistema para Escritórios Inteligentes" 
+                  src="/lovable-uploads/9ba09bc9-cbdb-4485-a093-3b6d78dcc7fd.png" 
+                  alt="AdvSmart AI - Sistema para Escritórios Inteligentes" 
                   className="w-full h-full object-contain filter brightness-110"
                 />
               </div>
