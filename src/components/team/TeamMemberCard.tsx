@@ -1,10 +1,11 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { User, Mail, Phone, Calendar, Award, Edit, Trash2 } from 'lucide-react';
+import { User, Mail, Phone, Calendar, Award, Edit, Trash2, Shield } from 'lucide-react';
+import { UserRole } from '@/types/auth';
 import PermissionGuard from '@/components/auth/PermissionGuard';
 
-interface TeamMember {
+interface ExtendedTeamMember {
   id: number;
   nome: string;
   cargo: string;
@@ -16,13 +17,19 @@ interface TeamMember {
   casos: number;
   taxa: string;
   avatar: string;
+  role: UserRole;
+  customPermissions?: Partial<Record<string, boolean>>;
 }
 
 interface TeamMemberCardProps {
-  member: TeamMember;
+  member: ExtendedTeamMember;
+  onView: (member: ExtendedTeamMember) => void;
+  onEdit: (member: ExtendedTeamMember) => void;
+  onDelete: (member: ExtendedTeamMember) => void;
+  onManagePermissions: (member: ExtendedTeamMember) => void;
 }
 
-const TeamMemberCard = ({ member }: TeamMemberCardProps) => {
+const TeamMemberCard = ({ member, onView, onEdit, onDelete, onManagePermissions }: TeamMemberCardProps) => {
   const getCargoColor = (cargo: string) => {
     switch (cargo) {
       case 'Advogado Sênior':
@@ -54,6 +61,7 @@ const TeamMemberCard = ({ member }: TeamMemberCardProps) => {
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCargoColor(member.cargo)}`}>
               {member.cargo}
             </span>
+            <p className="text-xs text-gray-400 mt-1 capitalize">Role: {member.role}</p>
           </div>
         </div>
         <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
@@ -99,15 +107,40 @@ const TeamMemberCard = ({ member }: TeamMemberCardProps) => {
       </div>
 
       <div className="mt-4 pt-4 border-t border-gray-700">
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="flex-1 border-gray-700 text-gray-300">
+        <div className="flex gap-2 mb-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex-1 border-gray-700 text-gray-300"
+            onClick={() => onView(member)}
+          >
             Ver Perfil
           </Button>
+        </div>
+        <div className="flex gap-2">
           <PermissionGuard permission="canManageUsers">
-            <Button variant="outline" size="sm" className="border-gray-700 text-gray-300">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="border-gray-700 text-gray-300"
+              onClick={() => onEdit(member)}
+            >
               <Edit size={14} />
             </Button>
-            <Button variant="outline" size="sm" className="border-red-700 text-red-400 hover:bg-red-900/20">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="border-blue-700 text-blue-400 hover:bg-blue-900/20"
+              onClick={() => onManagePermissions(member)}
+            >
+              <Shield size={14} />
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="border-red-700 text-red-400 hover:bg-red-900/20"
+              onClick={() => onDelete(member)}
+            >
               <Trash2 size={14} />
             </Button>
           </PermissionGuard>
