@@ -24,7 +24,7 @@ const ProcessChart = () => {
       ];
     }
 
-    return areas.Data;
+    return areasData;
   };
 
   const data = processChartData();
