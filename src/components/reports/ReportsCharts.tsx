@@ -1,43 +1,113 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell, LineChart, Line, ResponsiveContainer, AreaChart, Area, Tooltip } from 'recharts';
+import { useIntegratedData } from '@/hooks/useIntegratedData';
 
 const ReportsCharts = () => {
-  const receitaDespesas = [
-    { mes: 'Jan', receitas: 78450, despesas: 45200, saldo: 33250 },
-    { mes: 'Fev', receitas: 82300, despesas: 48900, saldo: 33400 },
-    { mes: 'Mar', receitas: 75600, despesas: 42800, saldo: 32800 },
-    { mes: 'Abr', receitas: 89200, despesas: 52100, saldo: 37100 },
-    { mes: 'Mai', receitas: 94800, despesas: 55600, saldo: 39200 },
-    { mes: 'Jun', receitas: 102300, despesas: 58700, saldo: 43600 }
-  ];
+  const { metricas, transacoes, processos } = useIntegratedData();
 
-  const processosPorArea = [
-    { name: 'Trabalhista', value: 35, color: '#6366f1' },
-    { name: 'Cível', value: 25, color: '#10b981' },
-    { name: 'Tributário', value: 20, color: '#f59e0b' },
-    { name: 'Empresarial', value: 15, color: '#8b5cf6' },
-    { name: 'Outros', value: 5, color: '#64748b' }
-  ];
+  // Processar dados de receitas e despesas por mês baseado nas transações reais
+  const receitaDespesas = useMemo(() => {
+    const monthlyData: { [key: string]: { receitas: number, despesas: number } } = {};
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+    const currentDate = new Date();
+    
+    // Inicializar últimos 6 meses
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const monthKey = months[date.getMonth()];
+      monthlyData[monthKey] = { receitas: 0, despesas: 0 };
+    }
 
-  const performanceAdvogados = [
-    { nome: 'Dr. Silva', casos: 24, sucesso: 95, receita: 45600 },
-    { nome: 'Dra. Santos', casos: 18, sucesso: 92, receita: 38200 },
-    { nome: 'Dr. Costa', casos: 21, sucesso: 88, receita: 42800 },
-    { nome: 'Dra. Lima', casos: 16, sucesso: 94, receita: 35400 },
-    { nome: 'Dr. Rocha', casos: 19, sucesso: 90, receita: 39700 }
-  ];
+    // Agrupar transações por mês
+    transacoes.forEach(transacao => {
+      if (transacao.status === 'Pago') {
+        const transacaoDate = new Date(transacao.data);
+        const monthKey = months[transacaoDate.getMonth()];
+        
+        if (monthlyData[monthKey]) {
+          if (transacao.tipo === 'Receita') {
+            monthlyData[monthKey].receitas += transacao.valor;
+          } else if (transacao.tipo === 'Despesa') {
+            monthlyData[monthKey].despesas += transacao.valor;
+          }
+        }
+      }
+    });
 
-  const clientesSatisfacao = [
-    { mes: 'Jan', satisfacao: 4.2, nps: 75 },
-    { mes: 'Fev', satisfacao: 4.3, nps: 78 },
-    { mes: 'Mar', satisfacao: 4.1, nps: 72 },
-    { mes: 'Abr', satisfacao: 4.5, nps: 82 },
-    { mes: 'Mai', satisfacao: 4.6, nps: 85 },
-    { mes: 'Jun', satisfacao: 4.8, nps: 89 }
-  ];
+    return Object.entries(monthlyData).map(([mes, data]) => ({
+      mes,
+      receitas: data.receitas,
+      despesas: data.despesas,
+      saldo: data.receitas - data.despesas
+    }));
+  }, [transacoes]);
+
+  // Processar dados de processos por área baseado nos dados reais
+  const processosPorArea = useMemo(() => {
+    const colors = ['#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#64748b'];
+    
+    const areas = Object.entries(metricas.processos.porArea).map(([area, quantidade], index) => ({
+      name: area,
+      value: quantidade,
+      color: colors[index % colors.length]
+    }));
+
+    // Se não houver dados, mostrar mensagem
+    if (areas.length === 0) {
+      return [{ name: 'Nenhum processo', value: 1, color: '#64748b' }];
+    }
+
+    return areas;
+  }, [metricas.processos.porArea]);
+
+  // Performance dos advogados baseado nos responsáveis dos processos
+  const performanceAdvogados = useMemo(() => {
+    const advogadosMap: { [key: string]: { casos: number, sucesso: number, receita: number } } = {};
+    
+    processos.forEach(processo => {
+      const responsavel = processo.responsavel || 'Não definido';
+      if (!advogadosMap[responsavel]) {
+        advogadosMap[responsavel] = { casos: 0, sucesso: 0, receita: 0 };
+      }
+      
+      advogadosMap[responsavel].casos += 1;
+      
+      if (processo.status === 'Finalizado') {
+        advogadosMap[responsavel].sucesso += 1;
+      }
+      
+      if (processo.valorFixo) {
+        advogadosMap[responsavel].receita += processo.valorFixo;
+      }
+    });
+
+    return Object.entries(advogadosMap).map(([nome, data]) => ({
+      nome: nome.length > 15 ? nome.substring(0, 15) + '...' : nome,
+      casos: data.casos,
+      sucesso: data.casos > 0 ? Math.round((data.sucesso / data.casos) * 100) : 0,
+      receita: data.receita
+    })).slice(0, 5); // Limitar a 5 advogados
+  }, [processos]);
+
+  // Evolução da satisfação simulada baseada na performance
+  const clientesSatisfacao = useMemo(() => {
+    const baseScore = 4.0;
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+    
+    return months.map((mes, index) => {
+      const satisfacao = baseScore + (metricas.processos.taxaSucesso / 100) * 0.8 + (index * 0.05);
+      const nps = Math.round(satisfacao * 18 + 10);
+      
+      return {
+        mes,
+        satisfacao: Number(satisfacao.toFixed(1)),
+        nps: Math.min(nps, 100)
+      };
+    });
+  }, [metricas.processos.taxaSucesso]);
 
   const chartConfig = {
     receitas: { label: "Receitas", color: "#10b981" },

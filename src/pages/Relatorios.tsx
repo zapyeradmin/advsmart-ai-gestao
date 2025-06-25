@@ -1,32 +1,47 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, Calendar, Download, FileText, Settings } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useIntegratedData } from '@/hooks/useIntegratedData';
 import ReportsOverview from '@/components/reports/ReportsOverview';
 import ReportsCharts from '@/components/reports/ReportsCharts';
 import ReportsTable from '@/components/reports/ReportsTable';
 
 const Relatorios = () => {
   const { toast } = useToast();
-
-  const dadosOverview = {
-    receita: 78450,
-    despesas: 45200,
-    casosAtivos: 89,
-    taxaSucesso: 94.2,
-    satisfacaoCliente: 4.8,
-    variacao: {
-      receita: 18,
-      despesas: -5,
-      casos: 3,
-      sucesso: 2.1,
-      satisfacao: 0.3
-    }
-  };
-
+  const { metricas, transacoes, processos, clientes } = useIntegratedData();
   const [periodoSelecionado, setPeriodoSelecionado] = useState('ultimo-mes');
+
+  // Calcular variações baseadas nos dados reais
+  const dadosOverview = useMemo(() => {
+    const receitaAtual = metricas.financeiro.receitaTotal;
+    const despesasAtual = metricas.financeiro.despesaTotal;
+    const casosAtivos = metricas.processos.emAndamento;
+    const taxaSucesso = metricas.processos.taxaSucesso;
+    
+    // Simular satisfação baseada na taxa de sucesso
+    const satisfacaoCliente = (4.0 + (taxaSucesso / 100) * 1.0);
+
+    // Calcular variações simuladas (em um sistema real, isso seria baseado em dados históricos)
+    const variacao = {
+      receita: receitaAtual > 50000 ? 18 : receitaAtual > 20000 ? 12 : 5,
+      despesas: despesasAtual > 30000 ? -5 : despesasAtual > 15000 ? 2 : 8,
+      casos: casosAtivos > 5 ? 3 : casosAtivos > 2 ? 1 : -2,
+      sucesso: taxaSucesso > 90 ? 2.1 : taxaSucesso > 70 ? 0.5 : -1.2,
+      satisfacao: satisfacaoCliente > 4.5 ? 0.3 : satisfacaoCliente > 4.0 ? 0.1 : -0.2
+    };
+
+    return {
+      receita: receitaAtual,
+      despesas: despesasAtual,
+      casosAtivos,
+      taxaSucesso,
+      satisfacaoCliente: Number(satisfacaoCliente.toFixed(1)),
+      variacao
+    };
+  }, [metricas]);
 
   const periodos = [
     { valor: 'ultima-semana', label: 'Última Semana' },
