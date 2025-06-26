@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -103,6 +102,7 @@ const CalculadorasJuridicas = () => {
   ];
 
   const renderCalculator = () => {
+    console.log('Rendering calculator:', activeCalculator);
     switch (activeCalculator) {
       case 'work-days':
         return <WorkDaysCalculator />;
@@ -118,8 +118,12 @@ const CalculadorasJuridicas = () => {
         return <RuralRetirementCalculator />;
       case 'pension':
         return <PensionCalculator />;
+      case 'alimony':
+        return <div className="text-center py-8"><div className="text-yellow-400">Calculadora em desenvolvimento</div></div>;
+      case 'court-fees':
+        return <div className="text-center py-8"><div className="text-yellow-400">Calculadora em desenvolvimento</div></div>;
       default:
-        return null;
+        return <div className="text-center py-8"><div className="text-red-400">Calculadora não encontrada</div></div>;
     }
   };
 
@@ -275,7 +279,10 @@ const CalculadorasJuridicas = () => {
                     <CalculatorCard
                       key={calculator.id}
                       calculator={calculator}
-                      onSelect={() => setActiveCalculator(calculator.id)}
+                      onSelect={() => {
+                        console.log('Calculator selected:', calculator.id);
+                        setActiveCalculator(calculator.id);
+                      }}
                     />
                   ))}
               </div>
