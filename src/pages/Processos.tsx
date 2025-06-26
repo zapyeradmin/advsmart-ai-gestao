@@ -1,15 +1,16 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Plus } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useCrudOperations } from '@/hooks/useCrudOperations';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProcessModal from '@/components/modals/ProcessModal';
 import ProcessViewModal from '@/components/modals/ProcessViewModal';
 import DeleteConfirmationDialog from '@/components/ui/delete-confirmation-dialog';
 import ProcessFilters from '@/components/process/ProcessFilters';
 import ProcessStats from '@/components/process/ProcessStats';
 import ProcessTable from '@/components/process/ProcessTable';
+import ProcessTracker from '@/components/process/ProcessTracker';
 
 const Processos = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -163,28 +164,41 @@ const Processos = () => {
         </Button>
       </div>
 
-      <ProcessStats processos={processos} />
+      <Tabs defaultValue="gerenciar" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger value="gerenciar">Gerenciar Processos</TabsTrigger>
+          <TabsTrigger value="acompanhar">Acompanhar Processo</TabsTrigger>
+        </TabsList>
 
-      <ProcessFilters
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        filterArea={filterArea}
-        setFilterArea={setFilterArea}
-        filterStatus={filterStatus}
-        setFilterStatus={setFilterStatus}
-        filterResponsavel={filterResponsavel}
-        setFilterResponsavel={setFilterResponsavel}
-        areas={areas}
-        responsaveis={responsaveis}
-      />
+        <TabsContent value="gerenciar" className="space-y-6">
+          <ProcessStats processos={processos} />
 
-      <ProcessTable
-        filteredProcessos={filteredProcessos}
-        processos={processos}
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+          <ProcessFilters
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filterArea={filterArea}
+            setFilterArea={setFilterArea}
+            filterStatus={filterStatus}
+            setFilterStatus={setFilterStatus}
+            filterResponsavel={filterResponsavel}
+            setFilterResponsavel={setFilterResponsavel}
+            areas={areas}
+            responsaveis={responsaveis}
+          />
+
+          <ProcessTable
+            filteredProcessos={filteredProcessos}
+            processos={processos}
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </TabsContent>
+
+        <TabsContent value="acompanhar">
+          <ProcessTracker />
+        </TabsContent>
+      </Tabs>
 
       {/* Modals */}
       <ProcessModal
