@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -82,7 +83,7 @@ const Login = () => {
 
             <CardHeader className="text-center relative z-10 space-y-4">
               {/* Logo */}
-              <div className="mx-auto w-32 h-12 flex items-center justify-center rounded-full relative overflow-hidden group-hover:scale-110 transition-transform duration-500">
+              <div className="mx-auto w-48 h-18 flex items-center justify-center rounded-full relative overflow-hidden group-hover:scale-110 transition-transform duration-500">
                 <img 
                   src="/lovable-uploads/9ba09bc9-cbdb-4485-a093-3b6d78dcc7fd.png" 
                   alt="AdvSmart AI - Sistema para Escritórios Inteligentes" 
