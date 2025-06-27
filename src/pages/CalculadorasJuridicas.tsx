@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +14,8 @@ import PensionCalculator from '@/components/calculators/PensionCalculator';
 const CalculadorasJuridicas = () => {
   const [activeCalculator, setActiveCalculator] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+
+  console.log('Estado atual da calculadora ativa:', activeCalculator);
 
   const calculators = [
     // Prazos
@@ -103,29 +104,40 @@ const CalculadorasJuridicas = () => {
   ];
 
   const renderCalculator = () => {
-    console.log('Renderizando calculadora:', activeCalculator);
+    console.log('Função renderCalculator chamada com:', activeCalculator);
     
     if (!activeCalculator) {
+      console.log('Nenhuma calculadora ativa, retornando null');
       return null;
     }
+
+    console.log('Tentando renderizar calculadora:', activeCalculator);
 
     try {
       switch (activeCalculator) {
         case 'work-days':
+          console.log('Renderizando WorkDaysCalculator');
           return <WorkDaysCalculator />;
         case 'interest':
+          console.log('Renderizando InterestCalculator');
           return <InterestCalculator />;
         case 'deadline':
+          console.log('Renderizando DeadlineCalculator');
           return <DeadlineCalculator />;
         case 'labor':
+          console.log('Renderizando LaborCalculator');
           return <LaborCalculator />;
         case 'retirement':
+          console.log('Renderizando RetirementCalculator');
           return <RetirementCalculator />;
         case 'rural-retirement':
+          console.log('Renderizando RuralRetirementCalculator');
           return <RuralRetirementCalculator />;
         case 'pension':
+          console.log('Renderizando PensionCalculator');
           return <PensionCalculator />;
         case 'alimony':
+          console.log('Renderizando placeholder para pensão alimentícia');
           return (
             <div className="text-center py-8">
               <div className="text-yellow-400 mb-4">Calculadora em desenvolvimento</div>
@@ -133,6 +145,7 @@ const CalculadorasJuridicas = () => {
             </div>
           );
         case 'court-fees':
+          console.log('Renderizando placeholder para custas judiciais');
           return (
             <div className="text-center py-8">
               <div className="text-yellow-400 mb-4">Calculadora em desenvolvimento</div>
@@ -140,6 +153,7 @@ const CalculadorasJuridicas = () => {
             </div>
           );
         default:
+          console.error('Calculadora não reconhecida:', activeCalculator);
           return (
             <div className="text-center py-8">
               <div className="text-red-400 mb-4">Calculadora não encontrada</div>
@@ -153,6 +167,7 @@ const CalculadorasJuridicas = () => {
         <div className="text-center py-8">
           <div className="text-red-400 mb-4">Erro ao carregar calculadora</div>
           <p className="text-gray-500">Ocorreu um erro ao carregar esta calculadora. Tente novamente.</p>
+          <p className="text-xs text-gray-600 mt-2">Erro: {error instanceof Error ? error.message : String(error)}</p>
         </div>
       );
     }
@@ -166,8 +181,12 @@ const CalculadorasJuridicas = () => {
 
   const categories = [...new Set(filteredCalculators.map(calc => calc.category))];
 
+  console.log('Renderizando CalculadorasJuridicas, activeCalculator:', activeCalculator);
+
   if (activeCalculator) {
     const activeCalc = calculators.find(calc => calc.id === activeCalculator);
+    console.log('Calculadora ativa encontrada:', activeCalc);
+    
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -175,7 +194,7 @@ const CalculadorasJuridicas = () => {
             <Button
               variant="ghost"
               onClick={() => {
-                console.log('Voltando para lista de calculadoras');
+                console.log('Botão voltar clicado, limpando calculadora ativa');
                 setActiveCalculator(null);
               }}
               className="text-gray-300 hover:text-white hover:bg-gray-800 transition-all duration-200"

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { LucideIcon } from 'lucide-react';
@@ -19,6 +18,8 @@ interface CalculatorCardProps {
 
 const CalculatorCard = ({ calculator, onSelect }: CalculatorCardProps) => {
   const Icon = calculator.icon;
+
+  console.log('CalculatorCard renderizado para:', calculator.id);
 
   const categoryColors = {
     'Prazos': {
@@ -66,8 +67,19 @@ const CalculatorCard = ({ calculator, onSelect }: CalculatorCardProps) => {
     glow: 'shadow-gray-500/20'
   };
 
+  const handleCardClick = () => {
+    console.log('Card clicado para calculadora:', calculator.id);
+    onSelect();
+  };
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log('Botão clicado para calculadora:', calculator.id);
+    onSelect();
+  };
+
   return (
-    <div className="group relative">
+    <div className="group relative" onClick={handleCardClick}>
       {/* Hover glow effect */}
       <div className={`absolute -inset-1 bg-gradient-to-br ${colors.gradient} rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm ${colors.glow}`}></div>
       
@@ -120,10 +132,7 @@ const CalculatorCard = ({ calculator, onSelect }: CalculatorCardProps) => {
         {/* Action button */}
         <div className="mt-6 pt-4 border-t border-gray-700/50">
           <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect();
-            }}
+            onClick={handleButtonClick}
             className={`
               w-full bg-primary/10 hover:bg-primary text-primary hover:text-white 
               border border-primary/30 hover:border-primary 
