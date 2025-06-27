@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,28 +103,58 @@ const CalculadorasJuridicas = () => {
   ];
 
   const renderCalculator = () => {
-    console.log('Rendering calculator:', activeCalculator);
-    switch (activeCalculator) {
-      case 'work-days':
-        return <WorkDaysCalculator />;
-      case 'interest':
-        return <InterestCalculator />;
-      case 'deadline':
-        return <DeadlineCalculator />;
-      case 'labor':
-        return <LaborCalculator />;
-      case 'retirement':
-        return <RetirementCalculator />;
-      case 'rural-retirement':
-        return <RuralRetirementCalculator />;
-      case 'pension':
-        return <PensionCalculator />;
-      case 'alimony':
-        return <div className="text-center py-8"><div className="text-yellow-400">Calculadora em desenvolvimento</div></div>;
-      case 'court-fees':
-        return <div className="text-center py-8"><div className="text-yellow-400">Calculadora em desenvolvimento</div></div>;
-      default:
-        return <div className="text-center py-8"><div className="text-red-400">Calculadora não encontrada</div></div>;
+    console.log('Renderizando calculadora:', activeCalculator);
+    
+    if (!activeCalculator) {
+      return null;
+    }
+
+    try {
+      switch (activeCalculator) {
+        case 'work-days':
+          return <WorkDaysCalculator />;
+        case 'interest':
+          return <InterestCalculator />;
+        case 'deadline':
+          return <DeadlineCalculator />;
+        case 'labor':
+          return <LaborCalculator />;
+        case 'retirement':
+          return <RetirementCalculator />;
+        case 'rural-retirement':
+          return <RuralRetirementCalculator />;
+        case 'pension':
+          return <PensionCalculator />;
+        case 'alimony':
+          return (
+            <div className="text-center py-8">
+              <div className="text-yellow-400 mb-4">Calculadora em desenvolvimento</div>
+              <p className="text-gray-500">Esta funcionalidade será implementada em breve.</p>
+            </div>
+          );
+        case 'court-fees':
+          return (
+            <div className="text-center py-8">
+              <div className="text-yellow-400 mb-4">Calculadora em desenvolvimento</div>
+              <p className="text-gray-500">Esta funcionalidade será implementada em breve.</p>
+            </div>
+          );
+        default:
+          return (
+            <div className="text-center py-8">
+              <div className="text-red-400 mb-4">Calculadora não encontrada</div>
+              <p className="text-gray-500">Verifique se a calculadora está corretamente configurada.</p>
+            </div>
+          );
+      }
+    } catch (error) {
+      console.error('Erro ao renderizar calculadora:', error);
+      return (
+        <div className="text-center py-8">
+          <div className="text-red-400 mb-4">Erro ao carregar calculadora</div>
+          <p className="text-gray-500">Ocorreu um erro ao carregar esta calculadora. Tente novamente.</p>
+        </div>
+      );
     }
   };
 
@@ -143,15 +174,18 @@ const CalculadorasJuridicas = () => {
           <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
-              onClick={() => setActiveCalculator(null)}
+              onClick={() => {
+                console.log('Voltando para lista de calculadoras');
+                setActiveCalculator(null);
+              }}
               className="text-gray-300 hover:text-white hover:bg-gray-800 transition-all duration-200"
             >
               <ArrowLeft size={20} className="mr-2" />
               Voltar
             </Button>
             <div>
-              <h1 className="text-2xl font-bold text-white">{activeCalc?.title}</h1>
-              <p className="text-gray-400">{activeCalc?.description}</p>
+              <h1 className="text-2xl font-bold text-white">{activeCalc?.title || 'Calculadora'}</h1>
+              <p className="text-gray-400">{activeCalc?.description || 'Descrição não disponível'}</p>
             </div>
           </div>
         </div>
@@ -280,7 +314,7 @@ const CalculadorasJuridicas = () => {
                       key={calculator.id}
                       calculator={calculator}
                       onSelect={() => {
-                        console.log('Calculator selected:', calculator.id);
+                        console.log('Calculadora selecionada:', calculator.id);
                         setActiveCalculator(calculator.id);
                       }}
                     />
