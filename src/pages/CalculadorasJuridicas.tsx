@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calculator, FileText, Clock, DollarSign, Scale, Briefcase, Calendar, Search, ArrowLeft, UserCheck, Tractor, Heart, Shield } from 'lucide-react';
+import { Calculator, FileText, Clock, DollarSign, Scale, Briefcase, Calendar, Search, ArrowLeft, UserCheck, Tractor, Heart, Shield, ChevronRight } from 'lucide-react';
 import CalculatorCard from '@/components/calculators/CalculatorCard';
 import WorkDaysCalculator from '@/components/calculators/WorkDaysCalculator';
 import InterestCalculator from '@/components/calculators/InterestCalculator';
@@ -181,6 +181,15 @@ const CalculadorasJuridicas = () => {
 
   const categories = [...new Set(filteredCalculators.map(calc => calc.category))];
 
+  const categoryColors = {
+    'Prazos': 'text-blue-400',
+    'Financeiro': 'text-green-400',
+    'Trabalhista': 'text-purple-400',
+    'Previdenciário': 'text-indigo-400',
+    'Família': 'text-pink-400',
+    'Custas': 'text-orange-400',
+  };
+
   console.log('Renderizando CalculadorasJuridicas, activeCalculator:', activeCalculator);
 
   if (activeCalculator) {
@@ -220,161 +229,111 @@ const CalculadorasJuridicas = () => {
 
   return (
     <div className="space-y-8">
-      {/* Enhanced Header Section */}
-      <div className="text-center space-y-6">
-        <div className="flex items-center justify-center space-x-4 mb-6">
-          <div className="relative">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/40 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
-              <Calculator className="text-primary" size={32} />
-            </div>
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+      {/* Header compacto */}
+      <div className="text-center space-y-4">
+        <div className="flex items-center justify-center space-x-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/40 rounded-xl flex items-center justify-center">
+            <Calculator className="text-primary" size={24} />
           </div>
           <div>
-            <h1 className="text-4xl font-bold text-white bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              Calculadoras Jurídicas
-            </h1>
-            <div className="h-1 w-24 bg-gradient-to-r from-primary to-blue-600 rounded-full mx-auto mt-2"></div>
-          </div>
-        </div>
-        <p className="text-gray-400 text-lg max-w-3xl mx-auto leading-relaxed">
-          Ferramentas especializadas para cálculos jurídicos precisos e automações que facilitam o seu dia a dia. 
-          <span className="text-primary font-medium"> Agora com calculadoras previdenciárias!</span>
-        </p>
-      </div>
-
-      {/* Enhanced Search Section */}
-      <div className="max-w-lg mx-auto">
-        <div className="relative group">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 via-blue-500/20 to-primary/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-primary transition-colors duration-300" size={20} />
-            <Input
-              placeholder="Buscar calculadora por nome ou função..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 pr-4 bg-gray-800/50 backdrop-blur-sm border-gray-600 text-white placeholder-gray-400 h-14 rounded-xl text-base focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
-            />
+            <h1 className="text-3xl font-bold text-white">Calculadoras Jurídicas</h1>
+            <p className="text-gray-400 text-sm">Ferramentas especializadas para cálculos jurídicos</p>
           </div>
         </div>
       </div>
 
-      {/* Enhanced Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-        <div className="group relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
-          <div className="relative bg-gray-800/50 backdrop-blur-sm border border-blue-600/30 rounded-xl p-6 text-center hover:transform hover:scale-105 transition-all duration-300">
-            <div className="text-3xl font-bold text-blue-400 mb-2">{calculators.length}</div>
-            <div className="text-sm text-gray-300">Calculadoras</div>
-            <div className="text-xs text-blue-300 mt-1">Disponíveis</div>
-          </div>
+      {/* Busca */}
+      <div className="max-w-md mx-auto">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <Input
+            placeholder="Buscar calculadora..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-gray-800/50 border-gray-600 text-white h-12"
+          />
         </div>
-        
-        <div className="group relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-green-600 to-green-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
-          <div className="relative bg-gray-800/50 backdrop-blur-sm border border-green-600/30 rounded-xl p-6 text-center hover:transform hover:scale-105 transition-all duration-300">
-            <div className="text-3xl font-bold text-green-400 mb-2">{categories.length}</div>
-            <div className="text-sm text-gray-300">Categorias</div>
-            <div className="text-xs text-green-300 mt-1">Especializadas</div>
-          </div>
-        </div>
-        
-        <div className="group relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
-          <div className="relative bg-gray-800/50 backdrop-blur-sm border border-purple-600/30 rounded-xl p-6 text-center hover:transform hover:scale-105 transition-all duration-300">
-            <div className="text-3xl font-bold text-purple-400 mb-2">100%</div>
-            <div className="text-sm text-gray-300">Precisão</div>
-            <div className="text-xs text-purple-300 mt-1">Garantida</div>
-          </div>
-        </div>
-        
-        <div className="group relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-600 to-orange-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
-          <div className="relative bg-gray-800/50 backdrop-blur-sm border border-orange-600/30 rounded-xl p-6 text-center hover:transform hover:scale-105 transition-all duration-300">
-            <div className="text-3xl font-bold text-orange-400 mb-2">
-              <Shield size={24} className="mx-auto" />
+      </div>
+
+      {/* Lista de calculadoras por categoria */}
+      <div className="max-w-4xl mx-auto space-y-8">
+        {categories.map(category => (
+          <div key={category} className="space-y-4">
+            {/* Header da categoria */}
+            <div className="flex items-center space-x-3 px-2">
+              <h2 className={`text-lg font-semibold ${categoryColors[category as keyof typeof categoryColors] || 'text-gray-400'}`}>
+                {category}
+              </h2>
+              <div className="h-px bg-gray-700 flex-1"></div>
+              <span className="text-xs text-gray-500 bg-gray-800 px-2 py-1 rounded-full">
+                {filteredCalculators.filter(calc => calc.category === category).length}
+              </span>
             </div>
-            <div className="text-sm text-gray-300">Confiável</div>
-            <div className="text-xs text-orange-300 mt-1">Atualizado</div>
-          </div>
-        </div>
-      </div>
 
-      {/* Enhanced Calculators Grid */}
-      {filteredCalculators.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="w-20 h-20 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Search className="text-gray-400" size={28} />
-          </div>
-          <h3 className="text-2xl font-medium text-gray-300 mb-3">Nenhuma calculadora encontrada</h3>
-          <p className="text-gray-500 max-w-md mx-auto">
-            Tente ajustar os termos da sua busca ou navegue pelas categorias disponíveis
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-12">
-          {categories.map(category => (
-            <div key={category} className="space-y-8">
-              <div className="flex items-center justify-center space-x-4">
-                <div className="h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent flex-1 max-w-xs"></div>
-                <div className="relative group">
-                  <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
-                  <h2 className="relative text-2xl font-bold text-white px-6 py-3 bg-gray-800/80 backdrop-blur-sm rounded-full border border-gray-600/50 shadow-lg">
-                    {category}
-                  </h2>
-                </div>
-                <div className="h-px bg-gradient-to-l from-transparent via-primary/50 to-transparent flex-1 max-w-xs"></div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                {filteredCalculators
-                  .filter(calc => calc.category === category)
-                  .map((calculator) => (
-                    <CalculatorCard
+            {/* Lista de calculadoras */}
+            <div className="space-y-2">
+              {filteredCalculators
+                .filter(calc => calc.category === category)
+                .map((calculator) => {
+                  const Icon = calculator.icon;
+                  return (
+                    <div
                       key={calculator.id}
-                      calculator={calculator}
-                      onSelect={() => {
+                      onClick={() => {
                         console.log('Calculadora selecionada:', calculator.id);
                         setActiveCalculator(calculator.id);
                       }}
-                    />
-                  ))}
-              </div>
+                      className="group bg-gray-800/50 hover:bg-gray-800/80 border border-gray-700/50 hover:border-gray-600/50 rounded-xl p-4 cursor-pointer transition-all duration-200 hover:transform hover:scale-[1.01]"
+                    >
+                      <div className="flex items-center space-x-4">
+                        {/* Ícone */}
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20 border border-primary/20 group-hover:scale-110 transition-transform duration-200`}>
+                          <Icon className="text-primary" size={20} />
+                        </div>
+
+                        {/* Conteúdo */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-white font-medium group-hover:text-primary transition-colors duration-200">
+                            {calculator.title}
+                          </h3>
+                          <p className="text-gray-400 text-sm mt-1 leading-relaxed">
+                            {calculator.description}
+                          </p>
+                        </div>
+
+                        {/* Seta */}
+                        <ChevronRight 
+                          className="text-gray-500 group-hover:text-primary transition-colors duration-200" 
+                          size={20} 
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
-          ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Mensagem quando não há resultados */}
+      {filteredCalculators.length === 0 && (
+        <div className="text-center py-12">
+          <Search className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-300 mb-2">Nenhuma calculadora encontrada</h3>
+          <p className="text-gray-500">Tente ajustar os termos da sua busca</p>
         </div>
       )}
 
-      {/* Enhanced Footer Info */}
-      <div className="relative group mt-16">
-        <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 via-blue-500/10 to-primary/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur"></div>
-        <div className="relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-8 shadow-2xl">
-          <div className="text-center space-y-4">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">💡</span>
-              </div>
-              <h3 className="text-xl font-bold text-white">Dica Importante</h3>
-            </div>
-            <p className="text-gray-400 max-w-4xl mx-auto leading-relaxed">
-              Todas as calculadoras são baseadas na <span className="text-primary font-medium">legislação vigente</span> e 
-              jurisprudência atual. Para casos específicos ou valores de alta complexidade, sempre 
-              <span className="text-yellow-400 font-medium"> consulte um especialista</span> para análise detalhada.
-            </p>
-            <div className="flex items-center justify-center space-x-6 pt-4 text-sm text-gray-500">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span>Atualizado 2024</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <span>Legislação Atual</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                <span>Cálculos Precisos</span>
-              </div>
-            </div>
+      {/* Footer compacto */}
+      <div className="bg-gray-800/30 rounded-xl border border-gray-700/30 p-6 mt-12">
+        <div className="text-center space-y-2">
+          <div className="flex items-center justify-center space-x-2 text-yellow-400">
+            <Shield size={16} />
+            <span className="text-sm font-medium">Calculadoras Atualizadas 2024</span>
           </div>
+          <p className="text-gray-400 text-xs max-w-2xl mx-auto">
+            Baseadas na legislação vigente. Para casos específicos, consulte um especialista.
+          </p>
         </div>
       </div>
     </div>
